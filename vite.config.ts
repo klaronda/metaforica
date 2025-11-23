@@ -51,7 +51,17 @@
     },
     build: {
       target: 'esnext',
-      outDir: 'build',
+      outDir: 'dist',
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+            'ui-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-select'],
+            'supabase': ['@supabase/supabase-js'],
+          },
+        },
+      },
+      chunkSizeWarningLimit: 600,
     },
     server: {
       port: 3000,
