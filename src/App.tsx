@@ -310,8 +310,8 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Google Analytics - Replace 'G-XXXXXXXXXX' with your actual Measurement ID */}
-      <GoogleAnalytics measurementId="G-XXXXXXXXXX" currentPage={currentPage} />
+      {/* Google Analytics */}
+      <GoogleAnalytics measurementId="G-Z7697T1078" currentPage={currentPage} />
       
       {currentPage !== 'emailPreferences' && <Header onNavigate={handleNavigation} />}
       <main id="main-content">

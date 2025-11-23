@@ -35,6 +35,7 @@ const heroImageUrl =
 
 export function Hero() {
   const [latestEpisode, setLatestEpisode] = useState<PodcastEpisode | null>(null);
+  const [isVideoExpanded, setIsVideoExpanded] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -61,17 +62,24 @@ export function Hero() {
     return raw.length > 160 ? `${raw.slice(0, 157)}…` : raw;
   }, [heroEpisode]);
   const heroEmbedUrl = useMemo(() => {
-    if (heroEpisode.spotify_embed_url) return heroEpisode.spotify_embed_url;
+    // Use video embed URL if available, otherwise construct it
+    if (heroEpisode.spotify_embed_url) {
+      // If it already has /video, use it as-is
+      if (heroEpisode.spotify_embed_url.includes('/video')) {
+        return heroEpisode.spotify_embed_url;
+      }
+      // Convert audio embed to video embed by adding /video before query params
+      const baseUrl = heroEpisode.spotify_embed_url.split('?')[0];
+      const queryParams = heroEpisode.spotify_embed_url.includes('?') 
+        ? '?' + heroEpisode.spotify_embed_url.split('?')[1] 
+        : '?utm_source=generator';
+      return `${baseUrl}/video${queryParams}`;
+    }
     if (heroEpisode.spotify_id) {
-      return `https://open.spotify.com/embed/episode/${heroEpisode.spotify_id}`;
+      return `https://open.spotify.com/embed/episode/${heroEpisode.spotify_id}/video?utm_source=generator`;
     }
 
-    const showId = heroEpisode.spotify_url?.split("/").slice(-1)[0];
-
-    if (showId) {
-      return `https://open.spotify.com/embed/show/${showId}`;
-    }
-
+    // Fallback to video embed
     return fallbackHeroEpisode.spotify_embed_url!;
   }, [heroEpisode]);
   const heroDateLabel = useMemo(() => {
@@ -166,36 +174,64 @@ export function Hero() {
           </div>
         </div>
 
-        {/* Full-width Último Episodio section */}
-        <div className="mt-16">
+        {/* Narrow Collapsible Último Episodio Video Card */}
+        <div className="mt-16 flex justify-center">
           <div
-            className="bg-[#fcf6c4] border border-black/10 rounded-organic overflow-hidden p-8 shadow-xl transition-transform duration-300 hover:scale-[1.01]"
-            style={{ backgroundColor: "#FCF6C4" }}
+            className="bg-[#fcf6c4] border border-black/10 rounded-organic overflow-hidden shadow-xl transition-all duration-500 ease-in-out cursor-pointer"
+            style={{ 
+              backgroundColor: "#FCF6C4",
+              maxWidth: "900px",
+              width: "100%"
+            }}
+            onClick={() => setIsVideoExpanded(true)}
           >
-            <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.4em] text-gray-600 mb-4">
-              <span>Último episodio</span>
-              <span className="text-amber-600">{heroEpisodeNumberLabel}</span>
+            {/* Episode Info Header */}
+            <div className="p-6 lg:p-8 border-b-2 border-black/10">
+              <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.4em] text-gray-600 mb-4">
+                <span>Último episodio</span>
+                <span className="text-amber-600">{heroEpisodeNumberLabel}</span>
+              </div>
+              <h3 className="text-2xl lg:text-3xl font-black text-black leading-tight mb-3">{heroEpisode.title}</h3>
+              <p className="text-base lg:text-lg text-gray-700 mb-4">{heroDescription}</p>
+              <div className="flex flex-wrap gap-6 text-sm font-semibold text-gray-600">
+                <span className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4" />
+                  {heroDateLabel}
+                </span>
+                <span className="flex items-center gap-2">
+                  <Clock className="h-4 w-4" />
+                  {heroEpisode.duration ?? "Duración"}
+                </span>
+              </div>
+              {!isVideoExpanded && (
+                <div className="mt-4 flex items-center gap-2 text-sm text-gray-600">
+                  <Play className="h-4 w-4" />
+                  <span className="font-semibold">Click to expand video</span>
+                </div>
+              )}
             </div>
-            <h3 className="text-2xl lg:text-3xl font-black text-black leading-tight">{heroEpisode.title}</h3>
-            <p className="text-sm text-gray-700 mt-3 mb-4">{heroDescription}</p>
-            <div className="flex flex-wrap gap-6 text-xs font-semibold text-gray-600 mb-6">
-              <span className="flex items-center gap-1">
-                <Calendar className="h-3 w-3" />
-                {heroDateLabel}
-              </span>
-              <span className="flex items-center gap-1">
-                <Clock className="h-3 w-3" />
-                {heroEpisode.duration ?? "Duración"}
-              </span>
-            </div>
-            <div className="rounded-2xl overflow-hidden border-2 border-black">
+            
+            {/* Video Player - Collapsible */}
+            <div 
+              className="w-full transition-all duration-500 ease-in-out overflow-hidden"
+              style={{
+                height: isVideoExpanded 
+                  ? "min(80vh, 800px)" 
+                  : "min(40vh, 400px)",
+                minHeight: isVideoExpanded ? "600px" : "300px"
+              }}
+            >
               <iframe
-                title="Último episodio"
+                title="Último episodio - Video"
                 src={heroEmbedUrl}
-                className="w-full block"
-                style={{ height: "80px" }}
+                className="w-full h-full block"
                 frameBorder="0"
                 allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                allowFullScreen
+                onLoad={() => {
+                  // Auto-expand when video loads/starts playing
+                  setTimeout(() => setIsVideoExpanded(true), 500);
+                }}
               />
             </div>
           </div>
