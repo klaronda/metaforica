@@ -1,6 +1,9 @@
+import { useState } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Heart, Mail, Instagram, Music, Youtube } from "lucide-react";
+import { toast } from "sonner@2.0.3";
+import { supabase } from "../lib/supabase";
 
 const currentYear = new Date().getFullYear();
 
@@ -9,6 +12,43 @@ interface FooterProps {
 }
 
 export function Footer({ onNavigate }: FooterProps) {
+  const [email, setEmail] = useState("");
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email.trim() || !emailRegex.test(email)) {
+      toast.error("Por favor, ingresa un email válido");
+      return;
+    }
+
+    try {
+      // Upsert: insert if new, update if exists (reactivate if previously unsubscribed)
+      const { error } = await supabase
+        .from("email_subscribers")
+        .upsert({
+          email: email.trim().toLowerCase(),
+          is_active: true,
+          pref_podcast: true,
+          subscribed_at: new Date().toISOString()
+        }, {
+          onConflict: 'email'
+        });
+
+      if (error) throw error;
+
+      toast.success("¡Gracias por suscribirte!", {
+        description: "Recibirás reflexiones exclusivas y actualizaciones del podcast.",
+        duration: 5000,
+      });
+      setEmail("");
+    } catch (error: any) {
+      console.error("Error subscribing email:", error);
+      toast.error("Error al suscribirte. Por favor intenta de nuevo.");
+    }
+  };
   return (
     <footer className="bg-black text-yellow-400 relative overflow-hidden">
       {/* Background decorative elements */}
@@ -33,17 +73,20 @@ export function Footer({ onNavigate }: FooterProps) {
               {/* Newsletter signup */}
               <div className="space-y-4">
                 <h4 className="text-xl font-black text-white">¡Mantente Conectado!</h4>
-                <div className="flex flex-col sm:flex-row gap-3 max-w-md">
+                <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3 max-w-md">
                   <Input
                     type="email"
                     placeholder="Tu email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="bg-yellow-400 border-2 border-black text-black placeholder-gray-700 focus:border-white font-semibold rounded-full"
+                    required
                   />
-                  <Button className="bg-yellow-400 hover:bg-yellow-300 text-black font-bold rounded-full border-2 border-black shadow-lg transform hover:scale-105 transition-all duration-200">
+                  <Button type="submit" className="bg-yellow-400 hover:bg-yellow-300 text-black font-bold rounded-full border-2 border-black shadow-lg transform hover:scale-105 transition-all duration-200">
                     <Mail className="h-4 w-4 mr-2" />
                     Suscribirse
                   </Button>
-                </div>
+                </form>
                 <p className="text-xs text-gray-400 font-semibold">
                   Recibe reflexiones exclusivas y actualizaciones del podcast.
                 </p>

@@ -185,12 +185,6 @@ export function BlogManager() {
     loadPosts();
   }, []);
 
-  const contentPreviewHtml = useMemo(() => {
-    if (!editForm.content.trim()) {
-      return '<p class="text-sm text-muted-foreground">Start writing to see how it will render.</p>';
-    }
-    return editForm.content;
-  }, [editForm.content]);
 
   // Search functionality
   const filteredPosts = useMemo(() => {
@@ -497,7 +491,7 @@ export function BlogManager() {
   const handleNewPost = () => {
     const newPost: BlogPost = {
       id: Date.now().toString(),
-      title: 'New Post',
+      title: '',
       content: '',
       excerpt: '',
       tags: [],
@@ -637,37 +631,51 @@ export function BlogManager() {
         <p className="text-muted-foreground">Create, edit, and manage your Metaforica blog posts</p>
       </div>
 
+      <style>{`
+        button[data-state="active"][id*="trigger-posts"],
+        button[data-state="active"][id*="trigger-editor"],
+        button[data-state="active"][id*="trigger-podcasts"],
+        button[data-state="active"][id*="trigger-wattpad"],
+        button[data-state="active"][id*="trigger-about"],
+        button[data-state="active"][id*="trigger-email"],
+        button[data-state="active"][id*="trigger-import"],
+        button[data-state="active"][id*="trigger-analytics"] {
+          background-color: black !important;
+          color: #FACC15 !important;
+          font-weight: bold !important;
+        }
+      `}</style>
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-12">
         <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8 gap-2">
-          <TabsTrigger value="posts" className="flex items-center gap-2">
+          <TabsTrigger value="posts" className="flex items-center gap-2 !data-[state=active]:bg-black !data-[state=active]:text-yellow-400">
             <BookOpen className="h-4 w-4" />
             Posts
           </TabsTrigger>
-          <TabsTrigger value="editor" className="flex items-center gap-2">
+          <TabsTrigger value="editor" className="flex items-center gap-2 !data-[state=active]:bg-black !data-[state=active]:text-yellow-400">
             <Edit3 className="h-4 w-4" />
             Editor
           </TabsTrigger>
-          <TabsTrigger value="podcasts" className="flex items-center gap-2">
+          <TabsTrigger value="podcasts" className="flex items-center gap-2 !data-[state=active]:bg-black !data-[state=active]:text-yellow-400">
             <Mic className="h-4 w-4" />
             Podcasts
           </TabsTrigger>
-          <TabsTrigger value="wattpad" className="flex items-center gap-2">
+          <TabsTrigger value="wattpad" className="flex items-center gap-2 !data-[state=active]:bg-black !data-[state=active]:text-yellow-400">
             <BookOpen className="h-4 w-4" />
             Wattpad
           </TabsTrigger>
-          <TabsTrigger value="about" className="flex items-center gap-2">
+          <TabsTrigger value="about" className="flex items-center gap-2 !data-[state=active]:bg-amber-600 !data-[state=active]:text-white !data-[state=active]:font-bold !data-[state=active]:border-2 !data-[state=active]:border-black">
             <User className="h-4 w-4" />
             About
           </TabsTrigger>
-          <TabsTrigger value="email" className="flex items-center gap-2">
+          <TabsTrigger value="email" className="flex items-center gap-2 !data-[state=active]:bg-amber-600 !data-[state=active]:text-white !data-[state=active]:font-bold !data-[state=active]:border-2 !data-[state=active]:border-black">
             <Mail className="h-4 w-4" />
             Email
           </TabsTrigger>
-          <TabsTrigger value="import" className="flex items-center gap-2">
+          <TabsTrigger value="import" className="flex items-center gap-2 !data-[state=active]:bg-amber-600 !data-[state=active]:text-white !data-[state=active]:font-bold !data-[state=active]:border-2 !data-[state=active]:border-black">
             <FileUp className="h-4 w-4" />
             Import
           </TabsTrigger>
-          <TabsTrigger value="analytics" className="flex items-center gap-2">
+          <TabsTrigger value="analytics" className="flex items-center gap-2 !data-[state=active]:bg-amber-600 !data-[state=active]:text-white !data-[state=active]:font-bold !data-[state=active]:border-2 !data-[state=active]:border-black">
             <Eye className="h-4 w-4" />
             Analytics
           </TabsTrigger>
@@ -978,7 +986,7 @@ export function BlogManager() {
                         contentEditable
                         suppressContentEditableWarning
                         onInput={onEditorInput}
-                        className="mt-1 min-h-[400px] resize-y border border-border bg-white/80 p-4 text-sm leading-relaxed"
+                        className="rich-text-content mt-1 min-h-[400px] resize-y border border-border bg-white/80 p-4 text-sm"
                         onKeyDown={(e) => {
                           if (e.ctrlKey || e.metaKey) {
                             switch (e.key.toLowerCase()) {
@@ -1000,17 +1008,7 @@ export function BlogManager() {
                           }
                         }}
                       />
-                      <div className="mt-4 space-y-2 rounded-lg border border-border bg-white/80 p-4 shadow-sm">
-                        <div className="flex items-center justify-between text-xs text-muted-foreground">
-                          <span>Live preview</span>
-                          <span className="italic">Matches the public-facing layout</span>
-                        </div>
-                        <div
-                          className="rich-text-content prose text-sm leading-relaxed text-muted-foreground"
-                          dangerouslySetInnerHTML={{ __html: contentPreviewHtml }}
-                        />
-                      </div>
-                      <div className="flex justify-between items-center mt-1 text-xs text-muted-foreground">
+                      <div className="flex justify-between items-center mt-4 text-xs text-muted-foreground">
                         <span>
                           Support for Markdown formatting. Word count: {editForm.content.split(' ').filter(word => word.length > 0).length}
                         </span>

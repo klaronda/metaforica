@@ -56,6 +56,9 @@ export function BlogPost({ postId, onBack }: BlogPostProps) {
   };
 
   useEffect(() => {
+    // Scroll to top when postId changes
+    window.scrollTo({ top: 0, behavior: "instant" });
+    
     if (!postId) {
       setPost(null);
       setLoading(false);

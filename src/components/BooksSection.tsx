@@ -1,47 +1,62 @@
+import React, { useState } from "react";
 import { Button } from "./ui/button";
 import { Card, CardContent } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Star, ShoppingCart, BookOpen, ExternalLink } from "lucide-react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { toast } from "sonner@2.0.3";
-import { useState } from "react";
+import { supabase } from "../lib/supabase";
 
 export function BooksSection() {
   const [email, setEmail] = useState("");
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email.trim() && email.includes("@")) {
+    
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email.trim() || !emailRegex.test(email)) {
+      toast.error("Por favor, ingresa un email válido");
+      return;
+    }
+
+    try {
+      // Upsert: insert if new, update if exists (reactivate if previously unsubscribed)
+      const { error } = await supabase
+        .from("email_subscribers")
+        .upsert({
+          email: email.trim().toLowerCase(),
+          is_active: true,
+          pref_books: true,
+          subscribed_at: new Date().toISOString()
+        }, {
+          onConflict: 'email'
+        });
+
+      if (error) throw error;
+
       toast.success("¡Gracias por suscribirte!", {
         description: "Pronto recibirás actualizaciones sobre nuevos lanzamientos y contenido exclusivo.",
         duration: 5000,
       });
       setEmail("");
-    } else {
-      toast.error("Por favor, ingresa un email válido");
+    } catch (error: any) {
+      console.error("Error subscribing email:", error);
+      toast.error("Error al suscribirte. Por favor intenta de nuevo.");
     }
   };
 
   const books = [
     {
-      title: "Metáforas del Alma",
-      subtitle: "Un Viaje hacia el Autoconocimiento",
-      description: "Una colección de reflexiones profundas sobre la condición humana, utilizando metáforas cotidianas para explorar los rincones más íntimos de nuestra psique.",
-      price: "$24.99",
-      rating: 4.8,
-      reviews: 127,
-      isNewRelease: true,
-      available: ["Kindle", "Tapa Blanda", "Audiolibro"]
-    },
-    {
-      title: "Conversaciones Conmigo Misma",
-      subtitle: "Diarios de una Buscadora",
-      description: "Un compilado íntimo de pensamientos, dudas y revelaciones que nacieron durante mi proceso personal de crecimiento y autodescubrimiento.",
-      price: "$19.99",
-      rating: 4.6,
-      reviews: 89,
+      title: "¿California?",
+      subtitle: "Decisiones, aventuras y más.",
+      description: "Una joven de casi 30 años en Lima parece tenerlo todo, hasta que un viaje de trabajo desafía sus creencias sobre trabajo, vocación y amor. Un viaje que termina volteando su mundo de cabeza.",
+      price: "$2.99",
+      rating: 5.0,
+      reviews: 2,
       isNewRelease: false,
-      available: ["Kindle", "Tapa Blanda"]
+      available: ["Kindle"],
+      amazonUrl: "https://www.amazon.com/-/es/Alexandra-Torre-ebook/dp/B0D278TLZ7"
     }
   ];
 
@@ -67,11 +82,12 @@ export function BooksSection() {
                 <div className="grid grid-cols-1 md:grid-cols-5 gap-0">
                   {/* Book cover */}
                   <div className="md:col-span-2 relative">
-                    <div className="aspect-[3/4] bg-gradient-to-br from-amber-100 via-orange-100 to-amber-200 flex items-center justify-center relative">
+                    <div className="bg-gradient-to-br from-amber-100 via-orange-100 to-amber-200 flex items-center justify-center relative" style={{ maxHeight: '150px', height: '150px', overflow: 'hidden' }}>
                       <ImageWithFallback
-                        src="https://images.unsplash.com/photo-1487147264018-f937fba0c817?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxib29rJTIwY292ZXIlMjBkZXNpZ258ZW58MXx8fHwxNzU1Mjc5NjgyfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+                        src="https://m.media-amazon.com/images/I/91lAtXn4cyL._SY385_.jpg"
                         alt={book.title}
-                        className="w-full h-full object-cover"
+                        className="max-h-[150px] w-auto object-contain"
+                        style={{ maxHeight: '150px' }}
                       />
                       {book.isNewRelease && (
                         <Badge className="absolute top-4 left-4 bg-red-500 text-white">
@@ -133,7 +149,10 @@ export function BooksSection() {
                           {book.price}
                         </div>
                         <div className="flex flex-col sm:flex-row gap-3">
-                          <Button className="bg-amber-500 hover:bg-amber-600 text-white">
+                          <Button 
+                            className="bg-amber-500 hover:bg-amber-600 text-white"
+                            onClick={() => book.amazonUrl && window.open(book.amazonUrl, '_blank')}
+                          >
                             <ShoppingCart className="h-4 w-4 mr-2" />
                             Comprar Ahora
                           </Button>

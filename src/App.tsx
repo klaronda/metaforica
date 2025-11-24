@@ -139,6 +139,8 @@ export default function App() {
     return () => window.removeEventListener('popstate', resolvePath);
   }, []);
 
+
+
   const handleNavigation = (page: Page) => {
     const path = pageToPath[page];
     if (path && window.location.pathname !== path) {
@@ -153,22 +155,31 @@ export default function App() {
     if (page === 'login') {
       setShowAdminLogin(true);
       setCurrentPage('home');
+      window.scrollTo({ top: 0, behavior: "instant" });
       return;
     }
 
-    if (page === 'podcast') {
-      const scrollToPodcast = () => {
-        const element = document.getElementById("podcast");
+    // Handle anchor links (podcast, books, about)
+    if (page === 'podcast' || page === 'books' || page === 'about') {
+      const sectionId = page === "podcast" ? "podcast" : page === "books" ? "books" : "about";
+      
+      if (currentPage !== "home") {
+        // Coming from a non-homepage: scroll to top first, then to section
+        setCurrentPage("home");
+        setSelectedBlogPostId(null);
+        window.scrollTo({ top: 0, behavior: "instant" });
+        setTimeout(() => {
+          const element = document.getElementById(sectionId);
+          if (element) {
+            element.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        }, 150);
+      } else {
+        // Already on homepage: just scroll to section (keep current behavior)
+        const element = document.getElementById(sectionId);
         if (element) {
           element.scrollIntoView({ behavior: "smooth", block: "start" });
         }
-      };
-
-      if (currentPage !== "home") {
-        setCurrentPage("home");
-        setTimeout(scrollToPodcast, 100);
-      } else {
-        scrollToPodcast();
       }
       return;
     }
@@ -178,25 +189,8 @@ export default function App() {
       setSelectedBlogPostId(null);
       // Scroll to top instantly
       window.scrollTo({ top: 0, behavior: "instant" });
-    } else if (page === 'books' || page === 'about') {
-      if (currentPage !== "home") {
-        setCurrentPage("home");
-        setSelectedBlogPostId(null);
-        setTimeout(() => {
-          const sectionId = page === "books" ? "books" : "about";
-          const element = document.getElementById(sectionId);
-          if (element) {
-            element.scrollIntoView({ behavior: "smooth", block: "start" });
-          }
-        }, 100);
-      } else {
-        const sectionId = page === "books" ? "books" : "about";
-        const element = document.getElementById(sectionId);
-        if (element) {
-          element.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
-      }
     } else {
+      // For all other pages (allPosts, historias, blogPost, etc.)
       setCurrentPage(page);
       if (page !== 'blogPost') {
         setSelectedBlogPostId(null);
@@ -236,6 +230,8 @@ export default function App() {
       window.history.pushState({}, "", path);
     }
     setCurrentPage('blogPost');
+    // Scroll to top when opening a blog post
+    window.scrollTo({ top: 0, behavior: "instant" });
   };
 
   // Admin Login Screen
@@ -300,7 +296,7 @@ export default function App() {
               onViewAll={() => handleNavigation('allPosts')}
             />
             <PodcastSection />
-            <StoriesSection />
+            <StoriesSection onNavigate={handleNavigation} />
             <BooksSection />
             <AboutSection />
           </>
@@ -311,7 +307,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-white">
       {/* Google Analytics */}
-      <GoogleAnalytics measurementId="G-Z7697T1078" currentPage={currentPage} />
+      <GoogleAnalytics measurementId="G-LFQ0BL4777" currentPage={currentPage} />
       
       {currentPage !== 'emailPreferences' && <Header onNavigate={handleNavigation} />}
       <main id="main-content">

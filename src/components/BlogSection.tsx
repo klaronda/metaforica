@@ -60,10 +60,12 @@ export function BlogSection({ onReadMore, onViewAll }: BlogSectionProps) {
           .select("*")
           .eq("status", "published")
           .order("publish_date", { ascending: false })
-          .limit(4);
+          .limit(3);
 
         if (error) throw error;
-        setPosts(((data ?? []) as SupabaseBlogPost[]).map(mapRowToEntry));
+        const mappedPosts = ((data ?? []) as SupabaseBlogPost[]).map(mapRowToEntry);
+        // ALWAYS limit to exactly 3 posts for homepage
+        setPosts(mappedPosts.slice(0, 3));
       } catch (error) {
         console.error("Failed to load blog section posts:", error);
       } finally {
@@ -97,7 +99,7 @@ export function BlogSection({ onReadMore, onViewAll }: BlogSectionProps) {
   }
 
   const featuredPost = posts[0];
-  const recentPosts = posts.slice(1);
+  const recentPosts = posts.slice(1, 3);
 
   return (
     <section id="blog" className="py-16 lg:py-24 bg-gradient-to-br from-yellow-50 to-amber-50">

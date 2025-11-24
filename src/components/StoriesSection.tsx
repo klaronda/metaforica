@@ -5,7 +5,11 @@ import { Badge } from "./ui/badge";
 import { BookOpen, Heart, MessageCircle, ExternalLink, FileText, CheckCircle } from "lucide-react";
 import { fetchWattpadStories, type WattpadStory } from "../lib/supabase";
 
-export function StoriesSection() {
+interface StoriesSectionProps {
+  onNavigate?: (page: string) => void;
+}
+
+export function StoriesSection({ onNavigate }: StoriesSectionProps) {
   const [stories, setStories] = useState<WattpadStory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -118,8 +122,19 @@ export function StoriesSection() {
         <div className="text-center">
           <Button
             size="lg"
-            className="bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-full px-8 py-4 text-lg shadow-xl transform hover:scale-105 transition-all duration-200"
-            onClick={() => window.location.href = '/historias'}
+            className="bg-black hover:bg-gray-800 text-yellow-400 font-bold rounded-full px-8 py-4 text-lg shadow-xl transform hover:scale-105 transition-all duration-200"
+            onClick={() => {
+              if (onNavigate) {
+                onNavigate('historias');
+              } else {
+                // Fallback if no navigation handler
+                if (window.location.pathname !== '/historias') {
+                  window.history.pushState({}, "", '/historias');
+                }
+                window.scrollTo({ top: 0, behavior: "instant" });
+                window.location.reload();
+              }
+            }}
           >
             <BookOpen className="h-5 w-5 mr-2" />
             Ver Todas las Historias
@@ -130,4 +145,5 @@ export function StoriesSection() {
     </section>
   );
 }
+
 

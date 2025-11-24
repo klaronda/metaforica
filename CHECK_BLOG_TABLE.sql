@@ -13,3 +13,4 @@ WHERE table_schema = 'public'
 AND table_name = 'blog_posts'
 ORDER BY ordinal_position;
 
+

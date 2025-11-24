@@ -58,3 +58,4 @@ WITH CHECK (auth.role() = 'authenticated');
 -- Add comment
 COMMENT ON TABLE public.blog_posts IS 'Blog posts for Metaforica website, including imported Medium posts';
 
+

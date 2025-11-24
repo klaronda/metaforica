@@ -43,3 +43,4 @@ CREATE POLICY "Authenticated users can manage Wattpad stories"
 -- Comment on table
 COMMENT ON TABLE wattpad_stories IS 'Stores synced stories from Wattpad profile @SoyMetaforica';
 
+

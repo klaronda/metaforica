@@ -218,3 +218,4 @@ npx lighthouse http://localhost:3006 --view
 # 3. Generate report
 ```
 
+

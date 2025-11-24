@@ -171,7 +171,7 @@ export function AnalyticsDashboard() {
             <div className="space-y-2">
               <h3 className="font-bold text-lg">✅ Google Analytics Connected</h3>
               <p className="text-sm text-muted-foreground">
-                Your site is tracking visitors with Google Analytics (G-Z7697T1078). 
+                Your site is tracking visitors with Google Analytics (G-LFQ0BL4777). 
                 Real-time data is available in your GA dashboard. To view detailed analytics in this CMS, 
                 connect the Google Analytics Data API.
               </p>

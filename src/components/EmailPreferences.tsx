@@ -6,6 +6,7 @@ import { Checkbox } from "./ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { toast } from "sonner@2.0.3";
 import { Mail, CheckCircle, Settings, FileText, BookOpen, Mic, Calendar } from "lucide-react";
+import { supabase } from "../lib/supabase";
 
 interface EmailPreferencesProps {
   onBack?: () => void;
@@ -35,34 +36,98 @@ export function EmailPreferences({ onBack }: EmailPreferencesProps) {
 
     setIsLoading(true);
 
-    // Simulate API call to verify email and load preferences
-    await new Promise(resolve => setTimeout(resolve, 800));
+    try {
+      const normalizedEmail = email.trim().toLowerCase();
+      
+      // Lookup email in database
+      const { data, error } = await supabase
+        .from("email_subscribers")
+        .select("*")
+        .eq("email", normalizedEmail)
+        .single();
 
-    // In production, this would fetch the user's current preferences
-    console.log("Fetching preferences for email:", email);
+      if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
+        throw error;
+      }
 
-    setIsLoading(false);
-    setIsEmailVerified(true);
-    toast.success("Email verificado");
+      // If email exists, load preferences
+      if (data) {
+        setPreferences({
+          blogPosts: data.pref_blog_posts ?? true,
+          books: data.pref_books ?? true,
+          podcast: data.pref_podcast ?? true,
+          workshops: data.pref_workshops ?? true,
+        });
+      } else {
+        // Email doesn't exist - create new record with all preferences false
+        // (user is opting out before subscribing)
+        const { error: insertError } = await supabase
+          .from("email_subscribers")
+          .insert({
+            email: normalizedEmail,
+            is_active: false,
+            pref_blog_posts: false,
+            pref_books: false,
+            pref_podcast: false,
+            pref_workshops: false,
+          });
+
+        if (insertError) throw insertError;
+
+        setPreferences({
+          blogPosts: false,
+          books: false,
+          podcast: false,
+          workshops: false,
+        });
+      }
+
+      setIsLoading(false);
+      setIsEmailVerified(true);
+      toast.success("Email verificado");
+    } catch (error: any) {
+      console.error("Error verifying email:", error);
+      toast.error("Error al verificar el email. Por favor intenta de nuevo.");
+      setIsLoading(false);
+    }
   };
 
   const handleUpdatePreferences = async () => {
     setIsLoading(true);
 
-    // Simulate API call to update preferences
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    try {
+      const normalizedEmail = email.trim().toLowerCase();
+      
+      // Update preferences in database
+      const { error } = await supabase
+        .from("email_subscribers")
+        .upsert({
+          email: normalizedEmail,
+          is_active: preferences.blogPosts || preferences.books || preferences.podcast || preferences.workshops,
+          pref_blog_posts: preferences.blogPosts,
+          pref_books: preferences.books,
+          pref_podcast: preferences.podcast,
+          pref_workshops: preferences.workshops,
+        }, {
+          onConflict: 'email'
+        });
 
-    console.log("Updated preferences for", email, preferences);
+      if (error) throw error;
 
-    setIsLoading(false);
-    setShowConfirmation(true);
+      setIsLoading(false);
+      setShowConfirmation(true);
 
-    // Hide confirmation after 3 seconds
-    setTimeout(() => {
-      setShowConfirmation(false);
-    }, 3000);
+      // Hide confirmation after 3 seconds
+      setTimeout(() => {
+        setShowConfirmation(false);
+      }, 3000);
 
-    toast.success("Preferencias actualizadas exitosamente");
+      toast.success("Preferencias actualizadas exitosamente");
+    } catch (error: any) {
+      console.error("Error updating preferences:", error);
+      toast.error("Error al actualizar las preferencias. Por favor intenta de nuevo.");
+      setIsLoading(false);
+    }
   };
 
   const handleUnsubscribeAll = async () => {
@@ -75,18 +140,39 @@ export function EmailPreferences({ onBack }: EmailPreferencesProps) {
     setPreferences(allUnchecked);
     
     setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    console.log("Unsubscribed from all emails:", email);
-    
-    setIsLoading(false);
-    setShowConfirmation(true);
-    
-    setTimeout(() => {
-      setShowConfirmation(false);
-    }, 3000);
-    
-    toast.success("Te has desuscrito de todos los correos");
+
+    try {
+      const normalizedEmail = email.trim().toLowerCase();
+      
+      // Update database: set is_active to false and all preferences to false
+      const { error } = await supabase
+        .from("email_subscribers")
+        .upsert({
+          email: normalizedEmail,
+          is_active: false,
+          pref_blog_posts: false,
+          pref_books: false,
+          pref_podcast: false,
+          pref_workshops: false,
+        }, {
+          onConflict: 'email'
+        });
+
+      if (error) throw error;
+      
+      setIsLoading(false);
+      setShowConfirmation(true);
+      
+      setTimeout(() => {
+        setShowConfirmation(false);
+      }, 3000);
+      
+      toast.success("Te has desuscrito de todos los correos");
+    } catch (error: any) {
+      console.error("Error unsubscribing:", error);
+      toast.error("Error al desuscribirte. Por favor intenta de nuevo.");
+      setIsLoading(false);
+    }
   };
 
   const togglePreference = (key: keyof typeof preferences) => {

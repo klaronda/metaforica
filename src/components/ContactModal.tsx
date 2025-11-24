@@ -7,6 +7,7 @@ import { Textarea } from "./ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { toast } from "sonner@2.0.3";
 import { Mail, CheckCircle } from "lucide-react";
+import { supabase } from "../lib/supabase";
 
 interface ContactModalProps {
   open: boolean;
@@ -34,7 +35,7 @@ export function ContactModal({ open, onOpenChange }: ContactModalProps) {
     e.preventDefault();
     
     // Validation
-    if (!formData.firstName || !formData.lastName || !formData.contactReason || !formData.email || !formData.message) {
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.message) {
       toast.error("Por favor completa todos los campos requeridos");
       return;
     }
@@ -48,13 +49,63 @@ export function ContactModal({ open, onOpenChange }: ContactModalProps) {
 
     setIsSubmitting(true);
 
-    // Simulate form submission (in production, this would send to a backend/API)
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    try {
+      // Combine firstName and lastName into name
+      const fullName = `${formData.firstName} ${formData.lastName}`.trim();
+      
+      // Map contactReason to subject
+      const subjectMap: Record<string, string> = {
+        podcast: "Consulta sobre Podcast",
+        libro: "Consulta sobre Libro",
+        other: "Otra consulta"
+      };
+      const subject = subjectMap[formData.contactReason] || formData.contactReason;
 
-    console.log("Contact form submitted:", formData);
-    
-    setIsSubmitting(false);
-    setShowConfirmation(true);
+      // Insert into Supabase
+      const { error } = await supabase
+        .from("contact_submissions")
+        .insert({
+          name: fullName,
+          email: formData.email,
+          phone: formData.phone || null,
+          subject: subject || null,
+          message: formData.message,
+          status: "new"
+        });
+
+      if (error) {
+        throw error;
+      }
+
+      // Send email notification via Edge Function
+      try {
+        const { data: functionData, error: functionError } = await supabase.functions.invoke('send-contact-email', {
+          body: {
+            name: fullName,
+            email: formData.email,
+            phone: formData.phone || null,
+            subject: subject || null,
+            message: formData.message,
+          }
+        });
+
+        if (functionError) {
+          console.error("Error sending email notification:", functionError);
+          // Don't fail the form submission if email fails
+        }
+      } catch (emailError) {
+        console.error("Error calling email function:", emailError);
+        // Don't fail the form submission if email fails
+      }
+
+      toast.success("¡Mensaje enviado exitosamente!");
+      setIsSubmitting(false);
+      setShowConfirmation(true);
+    } catch (error: any) {
+      console.error("Error submitting contact form:", error);
+      toast.error("Error al enviar el mensaje. Por favor intenta de nuevo.");
+      setIsSubmitting(false);
+    }
 
     // Reset form after showing confirmation
     setTimeout(() => {
@@ -160,7 +211,7 @@ export function ContactModal({ open, onOpenChange }: ContactModalProps) {
               {/* Phone */}
               <div className="space-y-2">
                 <Label htmlFor="phone" className="text-black">
-                  Teléfono <span className="text-red-600">*</span>
+                  Teléfono (opcional)
                 </Label>
                 <Input
                   id="phone"
@@ -168,7 +219,6 @@ export function ContactModal({ open, onOpenChange }: ContactModalProps) {
                   value={formData.phone}
                   onChange={(e) => handleInputChange("phone", e.target.value)}
                   className="bg-white border-yellow-300 focus:border-yellow-500 focus:ring-yellow-500"
-                  required
                 />
               </div>
 
