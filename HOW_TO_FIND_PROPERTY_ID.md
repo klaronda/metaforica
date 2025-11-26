@@ -37,3 +37,6 @@ For the Google Analytics Data API, we need the **Property ID** (different from S
 
 Once you have the Property ID, we'll add it to Supabase secrets and you'll be all set!
 
+
+
+

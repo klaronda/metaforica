@@ -132,7 +132,18 @@ serve(async (req) => {
   }
 
   try {
-    const { propertyId, startDate, endDate, metrics, dimensions }: GARequest = await req.json();
+    let requestBody: GARequest = {};
+    try {
+      const bodyText = await req.text();
+      if (bodyText) {
+        requestBody = JSON.parse(bodyText);
+      }
+    } catch (parseError) {
+      console.error('Failed to parse request body:', parseError);
+      // Continue with empty body - will use defaults
+    }
+
+    const { propertyId, startDate, endDate, metrics, dimensions } = requestBody;
 
     // Default values
     const gaPropertyId = propertyId || Deno.env.get("GA_PROPERTY_ID");
@@ -140,15 +151,32 @@ serve(async (req) => {
     const end = endDate || "today";
     const defaultMetrics = metrics || ["activeUsers", "screenPageViews", "averageSessionDuration", "bounceRate"];
 
+    console.log('Request params:', { gaPropertyId, start, end, defaultMetrics });
+
     if (!gaPropertyId) {
+      const errorMsg = "GA_PROPERTY_ID not configured. Please add GA_PROPERTY_ID secret in Supabase Edge Functions settings.";
+      console.error(errorMsg);
       return new Response(
-        JSON.stringify({ error: "GA_PROPERTY_ID not configured" }),
+        JSON.stringify({ error: errorMsg }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Check if service account JSON is configured
+    const serviceAccountJson = Deno.env.get("GA_SERVICE_ACCOUNT_JSON");
+    if (!serviceAccountJson) {
+      const errorMsg = "GA_SERVICE_ACCOUNT_JSON not configured. Please add GA_SERVICE_ACCOUNT_JSON secret in Supabase Edge Functions settings.";
+      console.error(errorMsg);
+      return new Response(
+        JSON.stringify({ error: errorMsg }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
     // Get access token
+    console.log('Getting access token...');
     const accessToken = await getAccessToken();
+    console.log('Access token obtained');
 
     // Fetch analytics data
     const data = await fetchAnalyticsData(

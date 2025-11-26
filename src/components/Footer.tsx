@@ -82,7 +82,7 @@ export function Footer({ onNavigate }: FooterProps) {
                     className="bg-yellow-400 border-2 border-black text-black placeholder-gray-700 focus:border-white font-semibold rounded-full"
                     required
                   />
-                  <Button type="submit" className="bg-yellow-400 hover:bg-yellow-300 text-black font-bold rounded-full border-2 border-black shadow-lg transform hover:scale-105 transition-all duration-200">
+                  <Button type="submit" className="bg-[#fdd91f] hover:bg-[#fee568] text-[#020202] font-bold rounded-full border-2 border-[#020202] shadow-lg transform hover:scale-105 transition-all duration-200">
                     <Mail className="h-4 w-4 mr-2" />
                     Suscribirse
                   </Button>

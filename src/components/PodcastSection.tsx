@@ -29,6 +29,19 @@ const buildEmbedUrl = (spotifyId?: string, spotifyUrl?: string, compact = false)
   return undefined;
 };
 
+const normalizeEmbedUrl = (url?: string) => {
+  if (!url) return undefined;
+  // If URL already has query params, append theme=0, otherwise add it
+  if (url.includes('?')) {
+    // Check if theme is already set
+    if (url.includes('theme=')) {
+      return url;
+    }
+    return `${url}&theme=0`;
+  }
+  return `${url}?theme=0`;
+};
+
 const fallbackDisplayEpisodes: DisplayEpisode[] = [
   {
     id: "placeholder-103",
@@ -117,10 +130,10 @@ export function PodcastSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center space-y-6 mb-16">
           <div className="flex flex-wrap justify-center gap-3">
-            <span className="bg-black text-yellow-400 uppercase tracking-[0.5em] px-4 py-1 text-xs rounded-full">
+            <span className="bg-black text-yellow-400 uppercase tracking-[0.5em] px-4 py-1 text-xs rounded-full font-bold">
               podcast
             </span>
-            <span className="bg-white text-black border border-black/20 uppercase tracking-[0.4em] px-4 py-1 text-xs rounded-full">
+            <span className="bg-white text-black border border-black/20 uppercase tracking-[0.4em] px-4 py-1 text-xs rounded-full font-bold">
               Últimos episodios
             </span>
           </div>
@@ -133,8 +146,8 @@ export function PodcastSection() {
         </div>
 
         <div className="mb-12">
-          <Card className="overflow-hidden border-4 border-black shadow-2xl bg-gradient-to-br from-yellow-300 to-amber-300 rounded-organic transition-transform duration-300 hover:scale-[1.01]">
-            <CardContent className="p-6 lg:p-10">
+          <Card className="overflow-hidden border-4 border-black shadow-2xl rounded-organic transition-transform duration-300 hover:scale-[1.01]" style={{ backgroundColor: 'transparent' }}>
+            <CardContent className="p-6 lg:p-10 !bg-[#fdd91f]" style={{ backgroundColor: '#fdd91f' }}>
               <div className="space-y-6">
                   <div className="space-y-4">
                     <h3 className="text-2xl lg:text-3xl font-black text-black leading-tight text-shadow-warm">
@@ -157,7 +170,7 @@ export function PodcastSection() {
                       {featuredEpisode && (
                         <iframe
                           title="Último episodio"
-                          src={featuredEpisode.spotify_embed_url ?? featuredSpotifyLink}
+                          src={normalizeEmbedUrl(featuredEpisode.spotify_embed_url) ?? buildEmbedUrl(featuredEpisode.spotify_id, featuredEpisode.spotify_url, true) ?? featuredSpotifyLink}
                           className="w-full rounded-2xl border-2 border-black block"
                           style={{ height: "80px" }}
                           frameBorder="0"
@@ -169,9 +182,10 @@ export function PodcastSection() {
                       <Button
                         asChild
                         size="lg"
-                        className="bg-black hover:bg-gray-800 text-yellow-400 font-bold border-4 border-black rounded-full px-8 py-3 transform hover:scale-105 transition-all duration-200 shadow-lg"
+                        className="bg-black hover:bg-gray-800 !text-[#fdd91f] font-bold border-4 border-black rounded-full px-8 py-3 transform hover:scale-105 transition-all duration-200 shadow-lg"
+                        style={{ color: '#fdd91f' }}
                       >
-                        <a href={featuredSpotifyLink} target="_blank" rel="noreferrer">
+                        <a href={featuredSpotifyLink} target="_blank" rel="noreferrer" style={{ color: '#fdd91f' }}>
                           <ExternalLink className="h-5 w-5 mr-2" />
                           Ver en Spotify
                         </a>
@@ -240,7 +254,7 @@ export function PodcastSection() {
           ))}
         </div>
 
-        <div className="text-center space-y-8 bg-gradient-to-br from-yellow-300 to-amber-300 p-12 rounded-organic border-4 border-black shadow-2xl">
+        <div className="text-center space-y-8 !bg-[#fdd91f] p-12 rounded-organic border-4 border-black shadow-2xl" style={{ backgroundColor: '#fdd91f' }}>
           <div className="space-y-4">
             <h3 className="text-3xl font-black text-black text-shadow-warm transform -rotate-1">
               ¡No te Pierdas Ningún Episodio!

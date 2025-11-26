@@ -118,7 +118,8 @@ export function BlogSection({ onReadMore, onViewAll }: BlogSectionProps) {
         {/* Featured post */}
         <div className="mb-12">
           <Card
-            className="overflow-hidden border-4 border-black shadow-2xl bg-gradient-to-r from-yellow-300 to-amber-300 rounded-organic transition-transform duration-300 hover:scale-105 cursor-pointer"
+            className="overflow-hidden border-4 border-black shadow-2xl rounded-organic transition-transform duration-300 hover:scale-105 cursor-pointer"
+            style={{ backgroundColor: 'transparent' }}
             onClick={async () => {
               // If it's a Medium post, open in new tab
               if (featuredPost.category === 'De Medium.com') {
@@ -142,10 +143,10 @@ export function BlogSection({ onReadMore, onViewAll }: BlogSectionProps) {
                   className="w-full h-full object-cover"
                 />
               </div>
-              <CardContent className="p-8 lg:p-12 flex flex-col justify-center">
+              <CardContent className="p-8 lg:p-12 flex flex-col justify-center !bg-[#fdd91f]" style={{ backgroundColor: '#fdd91f' }}>
                 <div className="space-y-4">
                   <div className="flex items-center space-x-2">
-                    <Badge className="bg-black text-yellow-400 font-bold px-3 py-1 rounded-full">
+                    <Badge className="bg-black !text-[#fdd91f] font-bold px-3 py-1 rounded-full" style={{ color: '#fdd91f' }}>
                       ¡DESTACADO!
                     </Badge>
                     <Badge className="bg-white text-black font-bold border-2 border-black">{featuredPost.category}</Badge>
@@ -166,7 +167,8 @@ export function BlogSection({ onReadMore, onViewAll }: BlogSectionProps) {
                   </div>
                   <Button 
                     onClick={() => onReadMore(featuredPost.id)}
-                    className="bg-black hover:bg-gray-800 text-yellow-400 font-bold rounded-full px-6 py-3 transform hover:scale-105 transition-all duration-200 shadow-lg"
+                    className="bg-black hover:bg-gray-800 !text-[#fdd91f] font-bold rounded-full px-6 py-3 transform hover:scale-105 transition-all duration-200 shadow-lg"
+                    style={{ color: '#fdd91f' }}
                   >
                     Leer Completo
                     <ArrowRight className="h-5 w-5 ml-2" />

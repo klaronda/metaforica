@@ -55,13 +55,13 @@ serve(async (req) => {
           <style>
             body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
             .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-            .header { background: linear-gradient(to right, #FACC15, #F59E0B); padding: 20px; border-radius: 8px 8px 0 0; }
-            .content { background: #fff; padding: 30px; border: 2px solid #000; border-top: none; }
+            .header { background: linear-gradient(to right, #fdd91f, #fee568); padding: 20px; border-radius: 8px 8px 0 0; }
+            .content { background: #fff; padding: 30px; border: 2px solid #020202; border-top: none; }
             .field { margin-bottom: 20px; }
-            .label { font-weight: bold; color: #000; margin-bottom: 5px; }
-            .value { color: #333; padding: 10px; background: #FDFAE6; border-radius: 4px; }
-            .message-box { padding: 15px; background: #FDFAE6; border-left: 4px solid #FACC15; margin-top: 10px; }
-            .footer { margin-top: 30px; padding-top: 20px; border-top: 2px solid #000; text-align: center; color: #666; font-size: 12px; }
+            .label { font-weight: bold; color: #020202; margin-bottom: 5px; }
+            .value { color: #333; padding: 10px; background: #fee568; border-radius: 4px; }
+            .message-box { padding: 15px; background: #fee568; border-left: 4px solid #fdd91f; margin-top: 10px; }
+            .footer { margin-top: 30px; padding-top: 20px; border-top: 2px solid #020202; text-align: center; color: #666; font-size: 12px; }
           </style>
         </head>
         <body>

@@ -24,11 +24,23 @@ export function Header({ onNavigate }: HeaderProps) {
   };
 
   return (
-    <header className="bg-gradient-to-r from-yellow-400 via-yellow-300 to-amber-400 sticky top-0 z-50 shadow-lg">
+    <>
+      <style>{`
+        header {
+          background-color: #020202 !important;
+        }
+        header a:not(.sr-only) {
+          color: #fdd91f !important;
+        }
+        header a:not(.sr-only):hover {
+          color: #fee568 !important;
+        }
+      `}</style>
+      <header className="!bg-[#020202] sticky top-0 z-50 shadow-lg" style={{ backgroundColor: '#020202' }}>
       {/* Skip to content link for accessibility */}
       <a 
         href="#main-content" 
-        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:bg-black focus:text-yellow-400 focus:px-4 focus:py-2 focus:rounded-full focus:font-bold"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:bg-[#fdd91f] focus:text-[#020202] focus:px-4 focus:py-2 focus:rounded-full focus:font-bold"
       >
         Skip to main content
       </a>
@@ -40,7 +52,7 @@ export function Header({ onNavigate }: HeaderProps) {
             <a 
               href="/" 
               onClick={(e) => { e.preventDefault(); handleNavClick('home'); }}
-              className="text-3xl font-black text-black text-shadow-warm transform -rotate-1 hover:scale-105 transition-transform cursor-pointer"
+              className="text-3xl font-black text-[#fdd91f] text-shadow-warm transform -rotate-1 hover:scale-105 transition-transform cursor-pointer"
               aria-label="Metafórica home"
             >
               Metafórica
@@ -49,27 +61,28 @@ export function Header({ onNavigate }: HeaderProps) {
 
           {/* Desktop Navigation */}
           <nav aria-label="Main navigation" className="hidden md:flex items-center space-x-8">
-            <a href="/" onClick={(e) => { e.preventDefault(); handleNavClick('home'); }} className="text-black hover:text-gray-800 transition-all duration-200 font-semibold hover:scale-105">
+            <a href="/" onClick={(e) => { e.preventDefault(); handleNavClick('home'); }} className="text-[#fdd91f] hover:text-[#fee568] transition-all duration-200 font-semibold hover:scale-105">
               Home
             </a>
-            <a href="/escritos" onClick={(e) => { e.preventDefault(); handleNavClick('allPosts'); }} className="text-black hover:text-gray-800 transition-all duration-200 font-semibold hover:scale-105">
+            <a href="/escritos" onClick={(e) => { e.preventDefault(); handleNavClick('allPosts'); }} className="text-[#fdd91f] hover:text-[#fee568] transition-all duration-200 font-semibold hover:scale-105">
               Escritos
             </a>
-            <a href="/#podcast" onClick={(e) => { e.preventDefault(); handleNavClick('podcast'); }} className="text-black hover:text-gray-800 transition-all duration-200 font-semibold hover:scale-105">
+            <a href="/#podcast" onClick={(e) => { e.preventDefault(); handleNavClick('podcast'); }} className="text-[#fdd91f] hover:text-[#fee568] transition-all duration-200 font-semibold hover:scale-105">
               Podcast
             </a>
-            <a href="/historias" onClick={(e) => { e.preventDefault(); handleNavClick('historias'); }} className="text-black hover:text-gray-800 transition-all duration-200 font-semibold hover:scale-105">
+            <a href="/historias" onClick={(e) => { e.preventDefault(); handleNavClick('historias'); }} className="text-[#fdd91f] hover:text-[#fee568] transition-all duration-200 font-semibold hover:scale-105">
               Historias
             </a>
-            <a href="/#books" onClick={(e) => { e.preventDefault(); handleNavClick('books'); }} className="text-black hover:text-gray-800 transition-all duration-200 font-semibold hover:scale-105">
+            <a href="/#books" onClick={(e) => { e.preventDefault(); handleNavClick('books'); }} className="text-[#fdd91f] hover:text-[#fee568] transition-all duration-200 font-semibold hover:scale-105">
               Libros
             </a>
-            <a href="/#about" onClick={(e) => { e.preventDefault(); handleNavClick('about'); }} className="text-black hover:text-gray-800 transition-all duration-200 font-semibold hover:scale-105">
+            <a href="/#about" onClick={(e) => { e.preventDefault(); handleNavClick('about'); }} className="text-[#fdd91f] hover:text-[#fee568] transition-all duration-200 font-semibold hover:scale-105">
               Sobre Mí
             </a>
             <Button 
               onClick={handleContactClick}
-              className="bg-black hover:bg-gray-800 text-yellow-400 font-bold rounded-full px-6 py-2 transform hover:scale-105 transition-all duration-200 shadow-lg"
+              className="!bg-[#fdd91f] hover:!bg-[#fee568] !text-[#020202] font-bold rounded-full px-6 py-2 transform hover:scale-105 transition-all duration-200 shadow-lg"
+              style={{ backgroundColor: '#fdd91f', color: '#020202' }}
             >
               Contacto
             </Button>
@@ -77,42 +90,43 @@ export function Header({ onNavigate }: HeaderProps) {
 
           {/* Mobile menu button */}
           <button
-            className="md:hidden bg-black rounded-full p-2 shadow-lg"
+            className="md:hidden bg-[#020202] rounded-full p-2 shadow-lg border-2 border-[#fdd91f]"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             {isMenuOpen ? (
-              <X className="h-6 w-6 text-yellow-400" />
+              <X className="h-6 w-6 text-[#fdd91f]" />
             ) : (
-              <Menu className="h-6 w-6 text-yellow-400" />
+              <Menu className="h-6 w-6 text-[#fdd91f]" />
             )}
           </button>
         </div>
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <nav aria-label="Mobile navigation" className="md:hidden py-4 border-t border-yellow-500">
+          <nav aria-label="Mobile navigation" className="md:hidden py-4 border-t border-[#fdd91f]">
             <div className="flex flex-col space-y-4">
-              <a href="/" onClick={(e) => { e.preventDefault(); handleNavClick('home'); }} className="text-black hover:text-gray-800 transition-colors font-semibold text-left">
+              <a href="/" onClick={(e) => { e.preventDefault(); handleNavClick('home'); }} className="text-[#fdd91f] hover:text-[#fee568] transition-colors font-semibold text-left">
                 Home
               </a>
-              <a href="/escritos" onClick={(e) => { e.preventDefault(); handleNavClick('allPosts'); }} className="text-black hover:text-gray-800 transition-colors font-semibold text-left">
+              <a href="/escritos" onClick={(e) => { e.preventDefault(); handleNavClick('allPosts'); }} className="text-[#fdd91f] hover:text-[#fee568] transition-colors font-semibold text-left">
                 Escritos
               </a>
-              <a href="/#podcast" onClick={(e) => { e.preventDefault(); handleNavClick('podcast'); }} className="text-black hover:text-gray-800 transition-colors font-semibold text-left">
+              <a href="/#podcast" onClick={(e) => { e.preventDefault(); handleNavClick('podcast'); }} className="text-[#fdd91f] hover:text-[#fee568] transition-colors font-semibold text-left">
                 Podcast
               </a>
-              <a href="/historias" onClick={(e) => { e.preventDefault(); handleNavClick('historias'); }} className="text-black hover:text-gray-800 transition-colors font-semibold text-left">
+              <a href="/historias" onClick={(e) => { e.preventDefault(); handleNavClick('historias'); }} className="text-[#fdd91f] hover:text-[#fee568] transition-colors font-semibold text-left">
                 Historias
               </a>
-              <a href="/#books" onClick={(e) => { e.preventDefault(); handleNavClick('books'); }} className="text-black hover:text-gray-800 transition-colors font-semibold text-left">
+              <a href="/#books" onClick={(e) => { e.preventDefault(); handleNavClick('books'); }} className="text-[#fdd91f] hover:text-[#fee568] transition-colors font-semibold text-left">
                 Libros
               </a>
-              <a href="/#about" onClick={(e) => { e.preventDefault(); handleNavClick('about'); }} className="text-black hover:text-gray-800 transition-colors font-semibold text-left">
+              <a href="/#about" onClick={(e) => { e.preventDefault(); handleNavClick('about'); }} className="text-[#fdd91f] hover:text-[#fee568] transition-colors font-semibold text-left">
                 Sobre Mí
               </a>
               <Button 
                 onClick={handleContactClick}
-                className="bg-black hover:bg-gray-800 text-yellow-400 font-bold rounded-full w-full shadow-lg"
+                className="!bg-[#fdd91f] hover:!bg-[#fee568] !text-[#020202] font-bold rounded-full w-full shadow-lg"
+                style={{ backgroundColor: '#fdd91f', color: '#020202' }}
               >
                 Contacto
               </Button>
@@ -127,5 +141,6 @@ export function Header({ onNavigate }: HeaderProps) {
         onOpenChange={setIsContactModalOpen}
       />
     </header>
+    </>
   );
 }

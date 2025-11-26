@@ -254,7 +254,7 @@ export function ContactModal({ open, onOpenChange }: ContactModalProps) {
               {/* Submit Button */}
               <Button
                 type="submit"
-                className="w-full bg-black hover:bg-gray-800 text-yellow-400 transition-all duration-200 shadow-lg"
+                className="w-full bg-[#020202] hover:bg-gray-800 text-[#fdd91f] transition-all duration-200 shadow-lg"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Enviando..." : "Enviar Mensaje"}

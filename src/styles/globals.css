@@ -8,7 +8,7 @@
   --card-foreground: #1a1a1a;
   --popover: #ffffff;
   --popover-foreground: #1a1a1a;
-  --primary: #f59e0b;
+  --primary: #fdd91f;
   --primary-foreground: #1a1a1a;
   --secondary: #fef3c7;
   --secondary-foreground: #1a1a1a;
@@ -41,11 +41,11 @@
   --sidebar-ring: #f59e0b;
   
   /* Metaforica brand colors */
-  --golden-yellow: #f5d800;
-  --warm-yellow: #fde047;
-  --deep-yellow: #eab308;
-  --golden-orange: #fb923c;
-  --warm-gradient: linear-gradient(135deg, #f5d800 0%, #fbbf24 50%, #fb923c 100%);
+  --primary-yellow: #fdd91f;
+  --secondary-yellow: #fee568;
+  --black: #020202;
+  --white: #ffffff;
+  --warm-gradient: linear-gradient(135deg, #fdd91f 0%, #fee568 50%, #fdd91f 100%);
 }
 
 .dark {

@@ -137,10 +137,10 @@ export function AllBlogPosts({ onReadPost }: AllBlogPostsProps) {
       <div className="max-w-6xl mx-auto px-4 py-12">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl lg:text-5xl text-shadow-warm mb-4 transform -rotate-1">
+          <h1 className="text-5xl md:text-6xl font-black text-black text-shadow-warm mb-4">
             Escritos
           </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-xl md:text-2xl text-gray-800 font-semibold max-w-3xl mx-auto leading-relaxed">
             Explora la colección completa de reflexiones, historias y técnicas de escritura de Metafórica
           </p>
         </div>

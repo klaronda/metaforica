@@ -640,8 +640,8 @@ export function BlogManager() {
         button[data-state="active"][id*="trigger-email"],
         button[data-state="active"][id*="trigger-import"],
         button[data-state="active"][id*="trigger-analytics"] {
-          background-color: black !important;
-          color: #FACC15 !important;
+          background-color: #020202 !important;
+          color: #fdd91f !important;
           font-weight: bold !important;
         }
       `}</style>
@@ -663,19 +663,19 @@ export function BlogManager() {
             <BookOpen className="h-4 w-4" />
             Wattpad
           </TabsTrigger>
-          <TabsTrigger value="about" className="flex items-center gap-2 !data-[state=active]:bg-amber-600 !data-[state=active]:text-white !data-[state=active]:font-bold !data-[state=active]:border-2 !data-[state=active]:border-black">
+          <TabsTrigger value="about" className="flex items-center gap-2 !data-[state=active]:bg-[#020202] !data-[state=active]:text-[#fdd91f] !data-[state=active]:font-bold !data-[state=active]:border-2 !data-[state=active]:border-[#020202]">
             <User className="h-4 w-4" />
             About
           </TabsTrigger>
-          <TabsTrigger value="email" className="flex items-center gap-2 !data-[state=active]:bg-amber-600 !data-[state=active]:text-white !data-[state=active]:font-bold !data-[state=active]:border-2 !data-[state=active]:border-black">
+          <TabsTrigger value="email" className="flex items-center gap-2 !data-[state=active]:bg-[#020202] !data-[state=active]:text-[#fdd91f] !data-[state=active]:font-bold !data-[state=active]:border-2 !data-[state=active]:border-[#020202]">
             <Mail className="h-4 w-4" />
             Email
           </TabsTrigger>
-          <TabsTrigger value="import" className="flex items-center gap-2 !data-[state=active]:bg-amber-600 !data-[state=active]:text-white !data-[state=active]:font-bold !data-[state=active]:border-2 !data-[state=active]:border-black">
+          <TabsTrigger value="import" className="flex items-center gap-2 !data-[state=active]:bg-[#020202] !data-[state=active]:text-[#fdd91f] !data-[state=active]:font-bold !data-[state=active]:border-2 !data-[state=active]:border-[#020202]">
             <FileUp className="h-4 w-4" />
             Import
           </TabsTrigger>
-          <TabsTrigger value="analytics" className="flex items-center gap-2 !data-[state=active]:bg-amber-600 !data-[state=active]:text-white !data-[state=active]:font-bold !data-[state=active]:border-2 !data-[state=active]:border-black">
+          <TabsTrigger value="analytics" className="flex items-center gap-2 !data-[state=active]:bg-[#020202] !data-[state=active]:text-[#fdd91f] !data-[state=active]:font-bold !data-[state=active]:border-2 !data-[state=active]:border-[#020202]">
             <Eye className="h-4 w-4" />
             Analytics
           </TabsTrigger>

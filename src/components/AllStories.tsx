@@ -3,7 +3,7 @@ import { Button } from "./ui/button";
 import { Card, CardContent } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Input } from "./ui/input";
-import { BookOpen, Heart, MessageCircle, FileText, CheckCircle, Search, ExternalLink, X } from "lucide-react";
+import { BookOpen, Heart, MessageCircle, FileText, Search, ExternalLink, X, ArrowRight } from "lucide-react";
 import { fetchWattpadStories, type WattpadStory } from "../lib/supabase";
 
 export function AllStories() {
@@ -57,7 +57,7 @@ export function AllStories() {
         <section className="bg-gradient-to-br from-purple-100 to-pink-100 py-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center space-y-6">
-              <Badge className="bg-purple-600 text-white uppercase tracking-[0.5em] px-4 py-1 text-xs">
+              <Badge className="bg-black !text-[#fdd91f] uppercase tracking-[0.5em] px-4 py-1 text-xs rounded-full font-bold" style={{ color: '#fdd91f' }}>
                 Historias
               </Badge>
               <h1 className="text-5xl md:text-6xl font-black text-black text-shadow-warm">
@@ -144,7 +144,7 @@ export function AllStories() {
                 {filteredStories.map((story) => (
                   <Card
                     key={story.id}
-                    className="rounded-organic border-2 border-purple-200 overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] cursor-pointer"
+                    className="group rounded-organic border-2 border-purple-200 overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] cursor-pointer"
                     onClick={() => window.open(story.story_url, "_blank")}
                   >
                     <div className="relative">
@@ -155,12 +155,6 @@ export function AllStories() {
                       />
                       {story.is_featured && (
                         <Badge className="absolute top-3 left-3 bg-yellow-500">Destacado</Badge>
-                      )}
-                      {story.is_completed && (
-                        <Badge className="absolute top-3 right-3 bg-green-500 gap-1">
-                          <CheckCircle className="h-3 w-3" />
-                          Completo
-                        </Badge>
                       )}
                     </div>
                     <CardContent className="p-6 space-y-3">
@@ -203,16 +197,19 @@ export function AllStories() {
                       )}
 
                       {/* Read Button */}
+                      <div className="pt-4">
                       <Button
-                        className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-full gap-2"
+                        variant="outline"
+                        className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300"
                         onClick={(e) => {
                           e.stopPropagation();
                           window.open(story.story_url, "_blank");
                         }}
                       >
                         Leer en Wattpad
-                        <ExternalLink className="h-4 w-4" />
+                        <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
                       </Button>
+                      </div>
                     </CardContent>
                   </Card>
                 ))}

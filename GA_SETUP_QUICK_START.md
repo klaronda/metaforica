@@ -28,10 +28,17 @@ All steps below are completely free - no credit card required!
 
 ## ✅ Step 3: Enable Analytics Data API (1 minute)
 
+**IMPORTANT:** This step is required! The API must be enabled for the Edge Function to work.
+
 1. In your Google Cloud project, go to **APIs & Services** → **Library**
 2. Search: `Google Analytics Data API`
 3. Click it → Click **"Enable"**
 4. Wait 10-20 seconds
+
+**OR** use this direct link (replace PROJECT_ID with your project ID):
+- https://console.developers.google.com/apis/api/analyticsdata.googleapis.com/overview?project=388768196566
+
+**Note:** If you just enabled it, wait a few minutes for the change to propagate before testing.
 
 ---
 
@@ -132,4 +139,7 @@ supabase functions deploy fetch-ga-analytics
 ## 🆘 Need Help?
 
 If you get stuck at any step, let me know which step and what error you're seeing!
+
+
+
 

@@ -98,7 +98,7 @@ export function Hero() {
     ? `EP. ${heroEpisode.episode_number}`
     : "EP. Nuevo";
   return (
-    <section className="golden-gradient py-20 lg:py-32 relative overflow-hidden">
+    <section className="py-20 lg:py-32 relative overflow-hidden" style={{ backgroundColor: '#fdd91f' }}>
       {/* Background decorative elements */}
       <div className="absolute top-10 left-10 w-32 h-32 bg-yellow-300 rounded-full opacity-30 blur-xl"></div>
       <div className="absolute bottom-20 right-10 w-40 h-40 bg-orange-300 rounded-full opacity-20 blur-xl"></div>
@@ -114,7 +114,7 @@ export function Hero() {
                 </div>
                 <span className="text-black font-bold uppercase tracking-wider text-lg">¡NUEVO!</span>
               </div>
-              <h1 className="text-5xl md:text-7xl font-black text-black leading-tight text-shadow-warm transform -rotate-1">
+              <h1 className="text-5xl md:text-7xl font-black text-black leading-tight transform -rotate-1">
                 Metafórica
               </h1>
               <p className="text-xl text-black font-semibold leading-relaxed">

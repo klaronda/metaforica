@@ -48,7 +48,7 @@ export function AnalyticsDashboard() {
   const fetchAnalytics = async () => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('fetch-ga-analytics', {
+      const response = await supabase.functions.invoke('fetch-ga-analytics', {
         body: {
           startDate: '30daysAgo',
           endDate: 'today',
@@ -56,8 +56,59 @@ export function AnalyticsDashboard() {
         },
       });
 
+      console.log('Edge Function response:', response);
+
+      const { data, error } = response;
+
       if (error) {
-        throw new Error(error.message);
+        console.error('Edge Function error:', error);
+        
+        // Try to extract error message from the error object
+        let errorMessage = error.message || 'Edge Function returned an error';
+        let errorDetails = '';
+        
+        // Try to fetch the actual error response body
+        if (error.context && error.context.response) {
+          try {
+            const responseText = await error.context.response.clone().text();
+            console.log('Error response body:', responseText);
+            const parsed = JSON.parse(responseText);
+            if (parsed.error) {
+              errorMessage = parsed.error;
+              if (parsed.details) {
+                errorDetails = parsed.details;
+              }
+            }
+          } catch (e) {
+            console.error('Failed to parse error response:', e);
+          }
+        }
+        
+        // Also check if data contains error (sometimes error responses still have data)
+        if (data && data.error) {
+          errorMessage = data.error;
+          if (data.details) {
+            errorDetails = data.details;
+          }
+        }
+        
+        // Check for Google Analytics API not enabled error
+        if (errorMessage.includes('Google Analytics Data API has not been used') || 
+            errorMessage.includes('SERVICE_DISABLED') ||
+            errorMessage.includes('analyticsdata.googleapis.com')) {
+          errorMessage = 'Google Analytics Data API is not enabled in your Google Cloud project.';
+          errorDetails = 'Please enable it here: https://console.developers.google.com/apis/api/analyticsdata.googleapis.com/overview?project=388768196566\n\nAfter enabling, wait a few minutes for the change to propagate.';
+        }
+        
+        const fullError = errorDetails ? `${errorMessage}\n\n${errorDetails}` : errorMessage;
+        throw new Error(fullError);
+      }
+
+      // Check if data contains error information (500 response with error in body)
+      if (data && data.error) {
+        console.error('Edge Function returned error in data:', data);
+        const errorMessage = data.error + (data.details ? `\n\nDetails: ${data.details}` : '');
+        throw new Error(errorMessage);
       }
 
       if (data && data.success) {
@@ -65,11 +116,19 @@ export function AnalyticsDashboard() {
         setLastFetch(new Date());
         toast.success('Analytics data loaded successfully');
       } else {
-        throw new Error('Failed to fetch analytics data');
+        console.error('Unexpected response format:', data);
+        throw new Error('Failed to fetch analytics data - unexpected response format');
       }
     } catch (error: any) {
       console.error('Failed to fetch analytics:', error);
-      toast.error(`Failed to load analytics: ${error.message}`);
+      const errorMessage = error.message || error.toString() || 'Unknown error occurred';
+      toast.error(`Failed to load analytics: ${errorMessage}`);
+      
+      // Log full error for debugging
+      console.error('Full error object:', error);
+      if (error.response || error.data) {
+        console.error('Full error details:', { response: error.response, data: error.data });
+      }
     } finally {
       setIsLoading(false);
     }

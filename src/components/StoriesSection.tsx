@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { Card, CardContent } from "./ui/card";
 import { Badge } from "./ui/badge";
-import { BookOpen, Heart, MessageCircle, ExternalLink, FileText, CheckCircle } from "lucide-react";
+import { BookOpen, Heart, MessageCircle, ExternalLink, FileText, ArrowRight } from "lucide-react";
 import { fetchWattpadStories, type WattpadStory } from "../lib/supabase";
 
 interface StoriesSectionProps {
@@ -48,7 +48,7 @@ export function StoriesSection({ onNavigate }: StoriesSectionProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center space-y-6 mb-16">
           <div className="flex justify-center gap-3">
-            <Badge className="bg-purple-600 text-white uppercase tracking-[0.5em] px-4 py-1 text-xs">
+            <Badge className="bg-black !text-[#fdd91f] uppercase tracking-[0.5em] px-4 py-1 text-xs rounded-full font-bold" style={{ color: '#fdd91f' }}>
               Historias
             </Badge>
           </div>
@@ -64,7 +64,7 @@ export function StoriesSection({ onNavigate }: StoriesSectionProps) {
           {stories.map((story) => (
             <Card
               key={story.id}
-              className="rounded-organic border-2 border-purple-200 overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] cursor-pointer"
+              className="group rounded-organic border-2 border-purple-200 overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] cursor-pointer"
               onClick={() => window.open(story.story_url, '_blank')}
             >
               <div className="relative">
@@ -73,12 +73,6 @@ export function StoriesSection({ onNavigate }: StoriesSectionProps) {
                   alt={story.title}
                   className="w-full h-64 object-cover"
                 />
-                {story.is_completed && (
-                  <Badge className="absolute top-3 right-3 bg-green-500 gap-1">
-                    <CheckCircle className="h-3 w-3" />
-                    Completo
-                  </Badge>
-                )}
               </div>
               <CardContent className="p-6 space-y-3">
                 <h3 className="text-lg font-black text-black leading-tight line-clamp-2">
@@ -114,6 +108,21 @@ export function StoriesSection({ onNavigate }: StoriesSectionProps) {
                     ))}
                   </div>
                 )}
+
+                {/* Read Button */}
+                <div className="pt-4">
+                <Button
+                  variant="outline"
+                  className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    window.open(story.story_url, "_blank");
+                  }}
+                >
+                  Leer en Wattpad
+                  <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                </Button>
+                </div>
               </CardContent>
             </Card>
           ))}
