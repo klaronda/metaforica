@@ -90,6 +90,34 @@ export default function App() {
     };
   }, [shouldNoIndex]);
 
+  // Update canonical URL based on current page
+  useEffect(() => {
+    const baseUrl = 'https://www.soymetaforica.com';
+    const canonicalMap: Record<Page, string> = {
+      home: `${baseUrl}/`,
+      allPosts: `${baseUrl}/escritos`,
+      books: `${baseUrl}/libros`,
+      about: `${baseUrl}/sobre-mi`,
+      historias: `${baseUrl}/historias`,
+      blog: `${baseUrl}/blog`,
+      podcast: `${baseUrl}/`,
+      blogPost: `${baseUrl}/blog/post`,
+      admin: `${baseUrl}/admin`,
+      emailPreferences: `${baseUrl}/email-preferences`,
+      login: `${baseUrl}/login`
+    };
+
+    const canonicalUrl = canonicalMap[currentPage] || `${baseUrl}/`;
+    
+    let canonicalLink = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+    if (!canonicalLink) {
+      canonicalLink = document.createElement('link');
+      canonicalLink.rel = 'canonical';
+      document.head.appendChild(canonicalLink);
+    }
+    canonicalLink.href = canonicalUrl;
+  }, [currentPage]);
+
   // Check authentication state on mount and listen for changes
   useEffect(() => {
     // Check initial session
