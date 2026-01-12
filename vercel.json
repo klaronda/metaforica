@@ -11,10 +11,10 @@
       "has": [
         {
           "type": "host",
-          "value": "soymetaforica.com"
+          "value": "www.soymetaforica.com"
         }
       ],
-      "destination": "https://www.soymetaforica.com/:path*",
+      "destination": "https://soymetaforica.com/:path*",
       "permanent": true
     },
     {
@@ -26,7 +26,7 @@
           "value": "http"
         }
       ],
-      "destination": "https://www.soymetaforica.com/:path*",
+      "destination": "https://soymetaforica.com/:path*",
       "permanent": true
     }
   ],

@@ -92,7 +92,7 @@ export default function App() {
 
   // Update canonical URL based on current page
   useEffect(() => {
-    const baseUrl = 'https://www.soymetaforica.com';
+    const baseUrl = 'https://soymetaforica.com';
     const canonicalMap: Record<Page, string> = {
       home: `${baseUrl}/`,
       allPosts: `${baseUrl}/escritos`,

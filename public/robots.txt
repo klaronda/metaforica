@@ -7,6 +7,6 @@ Disallow: /admin
 Disallow: /login
 
 # Sitemap
-Sitemap: https://www.soymetaforica.com/sitemap.xml
+Sitemap: https://soymetaforica.com/sitemap.xml
 
 
