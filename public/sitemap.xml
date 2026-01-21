@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  Note: Individual blog post URLs (/escritos/[slug]) should be added dynamically
+  or generated from the database. Consider making this sitemap dynamic in the future.
+-->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://soymetaforica.com/</loc>

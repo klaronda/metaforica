@@ -18,6 +18,7 @@ interface BlogPost {
   status: 'draft' | 'published';
   publishDate: string;
   readTime: number;
+  slug?: string;
   featuredImage?: string;
   seoDescription?: string;
 }
@@ -39,12 +40,13 @@ const mapDbPostToBlogPost = (row: SupabaseBlogPost): BlogPost => ({
   status: row.status === 'published' ? 'published' : 'draft',
   publishDate: row.publish_date || new Date().toISOString(),
   readTime: row.read_time ?? 0,
+  slug: row.slug || '',
   featuredImage: row.featured_image_url || undefined,
   seoDescription: row.seo_description || undefined
 });
 
 interface AllBlogPostsProps {
-  onReadPost: (postId: string) => void;
+  onReadPost: (slug: string) => void;
 }
 
 export function AllBlogPosts({ onReadPost }: AllBlogPostsProps) {
@@ -228,7 +230,7 @@ export function AllBlogPosts({ onReadPost }: AllBlogPostsProps) {
             <Card
               key={post.id}
               className="rounded-organic border-2 border-border hover:border-primary/50 transition-all duration-300 hover:shadow-xl group bg-white cursor-pointer overflow-hidden"
-              onClick={isMediumPost ? undefined : () => onReadPost(post.id)}
+              onClick={isMediumPost ? undefined : () => onReadPost(post.slug || post.id)}
             >
               <div className="h-48 w-full overflow-hidden">
                 <ImageWithFallback
@@ -298,7 +300,7 @@ export function AllBlogPosts({ onReadPost }: AllBlogPostsProps) {
                     className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300"
                     onClick={(event) => {
                       event.stopPropagation();
-                      onReadPost(post.id);
+                      onReadPost(post.slug || post.id);
                     }}
                   >
                     Leer más

@@ -2,11 +2,12 @@ import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
-import { Calendar, Clock, Tag, ArrowLeft, Share2, Heart, Bookmark, Eye } from "lucide-react";
+import { Calendar, Clock, Tag, ArrowLeft, Share2, Eye } from "lucide-react";
 import { supabase, type BlogPost as SupabaseBlogPost } from "../lib/supabase";
+import { ShareModal } from "./ShareModal";
 
 interface BlogPostProps {
-  postId: string | null;
+  slug: string | null;
   onBack: () => void;
 }
 
@@ -32,34 +33,17 @@ const formatTimestamp = (value?: string) => {
   });
 };
 
-export function BlogPost({ postId, onBack }: BlogPostProps) {
+export function BlogPost({ slug, onBack }: BlogPostProps) {
   const [post, setPost] = useState<SupabaseBlogPost | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isLiked, setIsLiked] = useState(false);
-  const [isBookmarked, setIsBookmarked] = useState(false);
-  const [likes, setLikes] = useState(142);
-
-  const handleLike = () => {
-    setIsLiked(!isLiked);
-    setLikes(prev => (isLiked ? prev - 1 : prev + 1));
-  };
-
-  const handleShare = () => {
-    if (navigator.share && post) {
-      navigator.share({
-        title: post.title,
-        text: post.excerpt,
-        url: window.location.href,
-      });
-    }
-  };
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   useEffect(() => {
-    // Scroll to top when postId changes
+    // Scroll to top when slug changes
     window.scrollTo({ top: 0, behavior: "instant" });
     
-    if (!postId) {
+    if (!slug) {
       setPost(null);
       setLoading(false);
       return;
@@ -74,30 +58,78 @@ export function BlogPost({ postId, onBack }: BlogPostProps) {
       return;
     }
 
+    // Try to fetch by slug first, fall back to ID if slug column doesn't exist
+    // Try to fetch by slug first, fall back to ID if slug column doesn't exist
     supabase
       .from("blog_posts")
       .select("*")
-      .eq("id", postId)
+      .eq("slug", slug)
       .single()
       .then(({ data, error }) => {
+        // If slug column doesn't exist (error code 42703) or post not found, try using slug as ID (backward compatibility)
+        if (error && (error.code === '42703' || error.message?.includes('does not exist'))) {
+          console.warn("Slug column not found, falling back to ID lookup:", error);
+          // Fall back to treating slug as ID for backward compatibility
+          return supabase
+            .from("blog_posts")
+            .select("*")
+            .eq("id", slug)
+            .single()
+            .then(({ data: fallbackData, error: fallbackError }) => {
+              if (fallbackError) {
+                setError("No se encontró este escrito.");
+                console.error("Failed to load blog post:", fallbackError);
+                setLoading(false);
+              } else {
+                // Debug logging
+                console.log("Blog post data (fallback):", fallbackData);
+                console.log("Content value:", fallbackData?.content);
+                console.log("Content length:", fallbackData?.content?.length);
+                console.log("Content trimmed length:", fallbackData?.content?.trim()?.length);
+                
+                // If it's a Medium post, open in new tab
+                if (fallbackData && fallbackData.category === 'De Medium.com' && fallbackData.seo_description?.startsWith('http')) {
+                  window.open(fallbackData.seo_description, '_blank');
+                  setLoading(false);
+                  return;
+                }
+                setPost(fallbackData as SupabaseBlogPost);
+                setLoading(false);
+              }
+            });
+        }
+        
         if (error) {
           setError("No se encontró este escrito.");
           console.error("Failed to load blog post:", error);
+          setLoading(false);
         } else {
+          // Debug logging
+          console.log("Blog post data:", data);
+          console.log("Content value:", data?.content);
+          console.log("Content length:", data?.content?.length);
+          console.log("Content trimmed length:", data?.content?.trim()?.length);
+          
           // If it's a Medium post, open in new tab
           if (data && data.category === 'De Medium.com' && data.seo_description?.startsWith('http')) {
             window.open(data.seo_description, '_blank');
+            setLoading(false);
             return;
           }
           setPost(data as SupabaseBlogPost);
+          setLoading(false);
         }
       })
-      .finally(() => setLoading(false));
-  }, [postId]);
+      .catch((err) => {
+        console.error("Unexpected error loading blog post:", err);
+        setError("Error al cargar el escrito.");
+        setLoading(false);
+      });
+  }, [slug]);
 
-  const contentHtml = post?.content?.trim()
+  const contentHtml = post?.content && post.content.trim().length > 0
     ? post.content
-    : post?.excerpt
+    : post?.excerpt && post.excerpt.trim().length > 0
       ? `<p>${post.excerpt}</p>`
       : "<p>El contenido aún no está disponible.</p>";
 
@@ -176,25 +208,7 @@ export function BlogPost({ postId, onBack }: BlogPostProps) {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={handleLike}
-                className={`${isLiked ? 'text-red-500 hover:text-red-600' : 'text-muted-foreground hover:text-red-500'} transition-colors`}
-              >
-                <Heart className={`h-4 w-4 mr-2 ${isLiked ? 'fill-current' : ''}`} />
-                {likes}
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsBookmarked(!isBookmarked)}
-                className={`${isBookmarked ? 'text-primary' : 'text-muted-foreground hover:text-primary'} transition-colors`}
-              >
-                <Bookmark className={`h-4 w-4 mr-2 ${isBookmarked ? 'fill-current' : ''}`} />
-                Guardar
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleShare}
+                onClick={() => setIsShareModalOpen(true)}
                 className="text-muted-foreground hover:text-primary transition-colors"
               >
                 <Share2 className="h-4 w-4 mr-2" />
@@ -218,6 +232,7 @@ export function BlogPost({ postId, onBack }: BlogPostProps) {
           <div
             className="rich-text-content bg-white rounded-organic border-2 border-primary/20 p-8 shadow-lg"
             dangerouslySetInnerHTML={{ __html: contentHtml }}
+            style={{ minHeight: '200px' }}
           />
         </div>
 
@@ -236,6 +251,15 @@ export function BlogPost({ postId, onBack }: BlogPostProps) {
           </div>
         </div>
       </article>
+
+      <ShareModal
+        open={isShareModalOpen}
+        onOpenChange={setIsShareModalOpen}
+        title={post.title}
+        url={window.location.href}
+        excerpt={post.excerpt}
+        imageUrl={post.featured_image_url}
+      />
     </div>
   );
 }

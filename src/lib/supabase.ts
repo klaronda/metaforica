@@ -17,6 +17,7 @@ export interface BlogPost {
   is_published?: boolean;
   tags?: string[];
   category?: string;
+  slug?: string;
   featured_image_url?: string;
   featured_image_path?: string;
   read_time?: number;

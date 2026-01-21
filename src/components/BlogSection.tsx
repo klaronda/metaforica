@@ -7,7 +7,7 @@ import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { supabase, type BlogPost as SupabaseBlogPost } from "../lib/supabase";
 
 interface BlogSectionProps {
-  onReadMore: (postId: string) => void;
+  onReadMore: (slug: string) => void;
   onViewAll?: () => void;
 }
 
@@ -18,6 +18,7 @@ interface BlogEntry {
   category: string;
   date: string;
   readTime: number;
+  slug?: string;
   featuredImage?: string;
 }
 
@@ -28,6 +29,7 @@ const mapRowToEntry = (row: SupabaseBlogPost): BlogEntry => ({
   category: row.category || "General",
   date: row.publish_date || "",
   readTime: row.read_time ?? 0,
+  slug: row.slug || '',
   featuredImage: row.featured_image_url || undefined
 });
 
@@ -128,10 +130,10 @@ export function BlogSection({ onReadMore, onViewAll }: BlogSectionProps) {
                 if (data?.seo_description?.startsWith('http')) {
                   window.open(data.seo_description, '_blank');
                 } else {
-                  onReadMore(featuredPost.id);
+                  onReadMore(featuredPost.slug || featuredPost.id);
                 }
               } else {
-                onReadMore(featuredPost.id);
+                onReadMore(featuredPost.slug || featuredPost.id);
               }
             }}
           >
@@ -166,7 +168,7 @@ export function BlogSection({ onReadMore, onViewAll }: BlogSectionProps) {
                     <span>{featuredPost.readTime} lectura</span>
                   </div>
                   <Button 
-                    onClick={() => onReadMore(featuredPost.id)}
+                    onClick={() => onReadMore(featuredPost.slug || featuredPost.id)}
                     className="bg-black hover:bg-gray-800 !text-[#fdd91f] font-bold rounded-full px-6 py-3 transform hover:scale-105 transition-all duration-200 shadow-lg"
                     style={{ color: '#fdd91f' }}
                   >
@@ -197,10 +199,10 @@ export function BlogSection({ onReadMore, onViewAll }: BlogSectionProps) {
                     if (data?.seo_description?.startsWith('http')) {
                       window.open(data.seo_description, '_blank');
                     } else {
-                      onReadMore(post.id);
+                      onReadMore(post.slug || post.id);
                     }
                   } else {
-                    onReadMore(post.id);
+                    onReadMore(post.slug || post.id);
                   }
                 }}
               >

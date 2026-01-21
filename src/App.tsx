@@ -35,36 +35,43 @@ const pageToPath: Record<Page, string> = {
   login: '/login'
 };
 
-const mapPathToPage = (path: string): Page => {
-  switch (path) {
+const mapPathToPage = (path: string): { page: Page; slug?: string } => {
+  // Normalize path - remove trailing slash (except root)
+  const normalizedPath = path !== '/' && path.endsWith('/') ? path.slice(0, -1) : path;
+  
+  // Check for blog post slug pattern: /escritos/[slug]
+  const escritosMatch = normalizedPath.match(/^\/escritos\/([^/]+)$/);
+  if (escritosMatch) {
+    return { page: 'blogPost', slug: escritosMatch[1] };
+  }
+  
+  switch (normalizedPath) {
     case '/':
-      return 'home';
+      return { page: 'home' };
     case '/escritos':
-      return 'allPosts';
+      return { page: 'allPosts' };
     case '/podcast':
-      return 'home';
+      return { page: 'home' };
     case '/libros':
-      return 'books';
+      return { page: 'books' };
     case '/sobre-mi':
-      return 'about';
+      return { page: 'about' };
     case '/historias':
-      return 'historias';
+      return { page: 'historias' };
     case '/admin':
-      return 'admin';
+      return { page: 'admin' };
     case '/login':
-      return 'login';
-    case '/blog/post':
-      return 'blogPost';
+      return { page: 'login' };
     case '/email-preferences':
-      return 'emailPreferences';
+      return { page: 'emailPreferences' };
     default:
-      return 'home';
+      return { page: 'home' };
   }
 };
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<Page>('home');
-  const [selectedBlogPostId, setSelectedBlogPostId] = useState<string | null>(null);
+  const [selectedBlogPostSlug, setSelectedBlogPostSlug] = useState<string | null>(null);
   const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
@@ -93,21 +100,26 @@ export default function App() {
   // Update canonical URL based on current page
   useEffect(() => {
     const baseUrl = 'https://soymetaforica.com';
-    const canonicalMap: Record<Page, string> = {
-      home: `${baseUrl}/`,
-      allPosts: `${baseUrl}/escritos`,
-      books: `${baseUrl}/libros`,
-      about: `${baseUrl}/sobre-mi`,
-      historias: `${baseUrl}/historias`,
-      blog: `${baseUrl}/blog`,
-      podcast: `${baseUrl}/`,
-      blogPost: `${baseUrl}/blog/post`,
-      admin: `${baseUrl}/admin`,
-      emailPreferences: `${baseUrl}/email-preferences`,
-      login: `${baseUrl}/login`
-    };
-
-    const canonicalUrl = canonicalMap[currentPage] || `${baseUrl}/`;
+    let canonicalUrl: string;
+    
+    if (currentPage === 'blogPost' && selectedBlogPostSlug) {
+      canonicalUrl = `${baseUrl}/escritos/${selectedBlogPostSlug}`;
+    } else {
+      const canonicalMap: Record<Page, string> = {
+        home: `${baseUrl}/`,
+        allPosts: `${baseUrl}/escritos`,
+        books: `${baseUrl}/libros`,
+        about: `${baseUrl}/sobre-mi`,
+        historias: `${baseUrl}/historias`,
+        blog: `${baseUrl}/blog`,
+        podcast: `${baseUrl}/`,
+        blogPost: `${baseUrl}/escritos`,
+        admin: `${baseUrl}/admin`,
+        emailPreferences: `${baseUrl}/email-preferences`,
+        login: `${baseUrl}/login`
+      };
+      canonicalUrl = canonicalMap[currentPage] || `${baseUrl}/`;
+    }
     
     let canonicalLink = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
     if (!canonicalLink) {
@@ -145,7 +157,13 @@ export default function App() {
 
   useEffect(() => {
     const resolvePath = () => {
-      const page = mapPathToPage(window.location.pathname);
+      // Normalize path by removing trailing slashes (except root)
+      let path = window.location.pathname;
+      if (path !== '/' && path.endsWith('/')) {
+        path = path.slice(0, -1);
+      }
+      const result = mapPathToPage(path);
+      const page = result.page;
       if (page === 'admin') {
         handleAdminAccess();
         return;
@@ -154,6 +172,9 @@ export default function App() {
         setShowAdminLogin(true);
         setCurrentPage('home');
         return;
+      }
+      if (page === 'blogPost' && result.slug) {
+        setSelectedBlogPostSlug(result.slug);
       }
       setCurrentPage(page);
       // Scroll to top on route change (except for anchor links)
@@ -214,14 +235,14 @@ export default function App() {
 
     if (page === 'home') {
       setCurrentPage('home');
-      setSelectedBlogPostId(null);
+      setSelectedBlogPostSlug(null);
       // Scroll to top instantly
       window.scrollTo({ top: 0, behavior: "instant" });
     } else {
       // For all other pages (allPosts, historias, blogPost, etc.)
       setCurrentPage(page);
       if (page !== 'blogPost') {
-        setSelectedBlogPostId(null);
+        setSelectedBlogPostSlug(null);
       }
       // Scroll to top instantly for all page changes
       window.scrollTo({ top: 0, behavior: "instant" });
@@ -251,9 +272,9 @@ export default function App() {
     setCurrentPage('home');
   };
 
-  const handleReadMore = (postId: string) => {
-    setSelectedBlogPostId(postId);
-    const path = pageToPath.blogPost;
+  const handleReadMore = (slug: string) => {
+    setSelectedBlogPostSlug(slug);
+    const path = `/escritos/${slug}`;
     if (window.location.pathname !== path) {
       window.history.pushState({}, "", path);
     }
@@ -302,11 +323,11 @@ export default function App() {
   const renderCurrentPage = () => {
     switch (currentPage) {
       case 'allPosts':
-        return <AllBlogPosts onReadPost={(postId) => handleReadMore(postId)} />;
+        return <AllBlogPosts onReadPost={(slug) => handleReadMore(slug)} />;
       case 'blogPost':
         return (
           <BlogPost
-            postId={selectedBlogPostId}
+            slug={selectedBlogPostSlug}
             onBack={() => handleNavigation('home')}
           />
         );
@@ -320,7 +341,7 @@ export default function App() {
           <>
             <Hero />
             <BlogSection 
-              onReadMore={(postId) => handleReadMore(postId)} 
+              onReadMore={(slug) => handleReadMore(slug)} 
               onViewAll={() => handleNavigation('allPosts')}
             />
             <PodcastSection />
@@ -337,7 +358,7 @@ export default function App() {
       {/* Google Analytics */}
       <GoogleAnalytics measurementId="G-LFQ0BL4777" currentPage={currentPage} />
       
-      {currentPage !== 'emailPreferences' && <Header onNavigate={handleNavigation} />}
+      {currentPage !== 'emailPreferences' && currentPage !== 'blogPost' && <Header onNavigate={handleNavigation} />}
       <main id="main-content">
         {renderCurrentPage()}
       </main>

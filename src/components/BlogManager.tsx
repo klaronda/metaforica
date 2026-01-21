@@ -68,6 +68,7 @@ interface BlogPost {
   status: 'draft' | 'published';
   publishDate: string;
   readTime: number;
+  slug?: string;
   seoTitle?: string;
   seoDescription?: string;
   featuredImage?: string;
@@ -98,11 +99,33 @@ const mapDbPostToBlogPost = (row: SupabaseBlogPost): BlogPost => ({
   status: row.status === 'published' ? 'published' : 'draft',
   publishDate: row.publish_date ? row.publish_date.toString() : new Date().toISOString(),
   readTime: row.read_time ?? 0,
+  slug: row.slug || '',
   seoTitle: row.seo_title || '',
   seoDescription: row.seo_description || '',
   featuredImage: row.featured_image_url || '',
   featuredImagePath: row.featured_image_path || ''
 });
+
+// Generate URL-friendly slug from title
+const generateSlug = (title: string): string => {
+  if (!title) return '';
+  
+  return title
+    .toLowerCase()
+    // Replace Spanish characters
+    .replace(/á/g, 'a')
+    .replace(/é/g, 'e')
+    .replace(/í/g, 'i')
+    .replace(/ó/g, 'o')
+    .replace(/ú/g, 'u')
+    .replace(/ñ/g, 'n')
+    // Replace spaces and special characters with hyphens
+    .replace(/[^a-z0-9]+/g, '-')
+    // Remove leading/trailing hyphens
+    .replace(/^-+|-+$/g, '')
+    // Remove multiple consecutive hyphens
+    .replace(/-+/g, '-');
+};
 
 export function BlogManager() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -134,6 +157,7 @@ export function BlogManager() {
     category: '',
     status: 'draft' as 'draft' | 'published',
     publishDate: '',
+    slug: '',
     seoTitle: '',
     seoDescription: '',
     featuredImage: '',
@@ -431,11 +455,41 @@ export function BlogManager() {
     setEditForm((prev) => ({ ...prev, content: html }));
   };
 
+  // Sync editForm.content to editor when content changes
   useEffect(() => {
-    if (editorRef.current && editorRef.current.innerHTML !== editForm.content) {
-      editorRef.current.innerHTML = editForm.content;
+    if (editorRef.current && editForm.content !== undefined) {
+      const currentContent = editorRef.current.innerHTML.trim();
+      const formContent = editForm.content.trim();
+      // Only update if they're actually different (avoid infinite loops)
+      if (currentContent !== formContent && formContent !== '') {
+        editorRef.current.innerHTML = editForm.content;
+      }
     }
   }, [editForm.content]);
+
+  // Ensure editor content is loaded when editing starts or selectedPost changes
+  useEffect(() => {
+    if (isEditing && activeTab === 'editor' && selectedPost && editorRef.current) {
+      // Use setTimeout to ensure DOM is ready after tab switch
+      const timer = setTimeout(() => {
+        if (editorRef.current && selectedPost.content) {
+          const currentContent = editorRef.current.innerHTML.trim();
+          const postContent = selectedPost.content.trim();
+          // Only update if content is different and post content exists
+          if (currentContent !== postContent && postContent !== '') {
+            console.log('Loading content into editor:', postContent.substring(0, 50) + '...');
+            editorRef.current.innerHTML = selectedPost.content;
+            // Ensure editForm is also updated
+            if (editForm.content !== selectedPost.content) {
+              setEditForm(prev => ({ ...prev, content: selectedPost.content }));
+            }
+          }
+        }
+      }, 150);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isEditing, selectedPost?.id, activeTab, selectedPost?.content]);
 
   const applyEditorCommand = (command: string, value?: string) => {
     document.execCommand(command, false, value);
@@ -499,6 +553,7 @@ export function BlogManager() {
       status: 'draft',
       publishDate: new Date().toISOString().split('T')[0],
       readTime: 0,
+      slug: '',
       seoTitle: '',
       seoDescription: '',
       featuredImage: '',
@@ -513,6 +568,7 @@ export function BlogManager() {
       category: newPost.category,
       status: newPost.status,
       publishDate: newPost.publishDate,
+      slug: newPost.slug || '',
       seoTitle: newPost.seoTitle || '',
       seoDescription: newPost.seoDescription || '',
       featuredImage: newPost.featuredImage || '',
@@ -526,12 +582,13 @@ export function BlogManager() {
     setSelectedPost(post);
     setEditForm({
       title: post.title,
-      content: post.content,
-      excerpt: post.excerpt,
+      content: post.content || '',
+      excerpt: post.excerpt || '',
       tags: post.tags.join(', '),
       category: post.category,
       status: post.status,
       publishDate: post.publishDate,
+      slug: post.slug || '',
       seoTitle: post.seoTitle || '',
       seoDescription: post.seoDescription || '',
       featuredImage: post.featuredImage || '',
@@ -539,6 +596,13 @@ export function BlogManager() {
     });
     setIsEditing(true);
     setActiveTab('editor');
+    
+    // Ensure editor content is set after a brief delay to allow DOM to update
+    setTimeout(() => {
+      if (editorRef.current && post.content) {
+        editorRef.current.innerHTML = post.content;
+      }
+    }, 100);
   };
 
   const handleSavePost = async () => {
@@ -546,6 +610,47 @@ export function BlogManager() {
     if (!supabase) {
       toast.error('Supabase client is not configured.');
       return;
+    }
+
+    // Generate slug if not provided or if title changed
+    let finalSlug = editForm.slug.trim();
+    if (!finalSlug && editForm.title) {
+      finalSlug = generateSlug(editForm.title);
+    }
+
+    // Check for duplicate slugs (excluding current post) - only if slug column exists
+    let slugColumnExists = false;
+    if (finalSlug) {
+      try {
+        const { data: existingPosts, error: slugCheckError } = await supabase
+          .from('blog_posts')
+          .select('id, slug')
+          .eq('slug', finalSlug);
+        
+        // If error is about column not existing, skip slug functionality
+        if (slugCheckError && (slugCheckError.code === 'PGRST204' || slugCheckError.message?.includes('slug'))) {
+          console.warn('Slug column does not exist yet, skipping slug functionality');
+          slugColumnExists = false;
+        } else if (!slugCheckError) {
+          slugColumnExists = true;
+          if (existingPosts && existingPosts.length > 0) {
+            const isDuplicate = existingPosts.some(p => p.id !== selectedPost.id);
+            if (isDuplicate) {
+              // Append number to make unique
+              let counter = 1;
+              let uniqueSlug = `${finalSlug}-${counter}`;
+              while (existingPosts.some(p => p.slug === uniqueSlug && p.id !== selectedPost.id)) {
+                counter++;
+                uniqueSlug = `${finalSlug}-${counter}`;
+              }
+              finalSlug = uniqueSlug;
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('Error checking slug, assuming column does not exist:', err);
+        slugColumnExists = false;
+      }
     }
 
     const payload: Partial<SupabaseBlogPost> = {
@@ -566,6 +671,11 @@ export function BlogManager() {
       seo_description: editForm.seoDescription
     };
 
+    // Only include slug if column exists
+    if (slugColumnExists && finalSlug) {
+      (payload as any).slug = finalSlug;
+    }
+
     try {
       const exists = posts.some((post) => post.id === selectedPost.id);
       if (exists) {
@@ -573,16 +683,47 @@ export function BlogManager() {
           .from('blog_posts')
           .update(payload)
           .eq('id', selectedPost.id);
-        if (error) throw error;
+        if (error) {
+          // If error is about slug column, try again without slug
+          if (error.code === 'PGRST204' && (payload as any).slug) {
+            console.warn('Slug column does not exist, retrying without slug');
+            delete (payload as any).slug;
+            const { error: retryError } = await supabase
+              .from('blog_posts')
+              .update(payload)
+              .eq('id', selectedPost.id);
+            if (retryError) throw retryError;
+          } else {
+            throw error;
+          }
+        }
       } else {
         const { data, error } = await supabase
           .from('blog_posts')
           .insert(payload)
           .select()
           .single();
-        if (error) throw error;
-        if (data) {
-          setSelectedPost(mapDbPostToBlogPost(data));
+        if (error) {
+          // If error is about slug column, try again without slug
+          if (error.code === 'PGRST204' && (payload as any).slug) {
+            console.warn('Slug column does not exist, retrying without slug');
+            delete (payload as any).slug;
+            const { data: retryData, error: retryError } = await supabase
+              .from('blog_posts')
+              .insert(payload)
+              .select()
+              .single();
+            if (retryError) throw retryError;
+            if (retryData) {
+              setSelectedPost(mapDbPostToBlogPost(retryData));
+            }
+          } else {
+            throw error;
+          }
+        } else {
+          if (data) {
+            setSelectedPost(mapDbPostToBlogPost(data));
+          }
         }
       }
 
@@ -798,10 +939,31 @@ export function BlogManager() {
                       <Input
                         id="title"
                         value={editForm.title}
-                        onChange={(e) => setEditForm({...editForm, title: e.target.value})}
+                        onChange={(e) => {
+                          const newTitle = e.target.value;
+                          // Auto-generate slug if slug is empty or matches the old title's slug
+                          const currentSlugFromTitle = generateSlug(editForm.title);
+                          const shouldAutoGenerate = !editForm.slug || editForm.slug === currentSlugFromTitle;
+                          const newSlug = shouldAutoGenerate ? generateSlug(newTitle) : editForm.slug;
+                          setEditForm({...editForm, title: newTitle, slug: newSlug});
+                        }}
                         placeholder="Enter post title..."
                         className="mt-1"
                       />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="slug">URL Slug</Label>
+                      <Input
+                        id="slug"
+                        value={editForm.slug}
+                        onChange={(e) => setEditForm({...editForm, slug: generateSlug(e.target.value)})}
+                        placeholder="url-friendly-slug"
+                        className="mt-1"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Auto-generated from title. Edit manually if needed. Will be used in URL: /escritos/[slug]
+                      </p>
                     </div>
                     
                     <div>
