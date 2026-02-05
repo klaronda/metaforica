@@ -141,7 +141,7 @@ export function PodcastSection() {
             Podcast Metafórica
           </h2>
           <p className="text-lg md:text-xl text-gray-800 font-semibold max-w-3xl mx-auto leading-relaxed">
-            Conversaciones sobre escritura, identidad, creatividad y el poder transformador de las historias. Cada episodio abre curiosidad y acompaña la exploración.
+            Conversaciones a veces entre amigos, a veces con expertos en algún tema con algo que decir que podría contribuir a sentirnos mejor. Esas charlas que simplemente hacen que te sientas bien después de tenerlas.
           </p>
         </div>
 

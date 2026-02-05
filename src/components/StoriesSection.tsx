@@ -53,10 +53,10 @@ export function StoriesSection({ onNavigate }: StoriesSectionProps) {
             </Badge>
           </div>
           <h2 className="text-4xl md:text-5xl font-black text-black text-shadow-warm">
-            Cuentos y Narrativas
+            Cuentos Cortos
           </h2>
           <p className="text-lg md:text-xl text-gray-800 font-semibold max-w-3xl mx-auto leading-relaxed">
-            Historias personales, reflexiones y narrativas que exploran la vida desde diferentes ángulos.
+            Diferentes ángulos de la vida, diferentes momentos representados en mini relatos. El espectro es amplio, así que te invitamos a navegar y consumir cualquier historia. Disponibles para lectura inmediata. Ningún costo implicado.
           </p>
         </div>
 

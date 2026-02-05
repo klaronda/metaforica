@@ -109,11 +109,10 @@ export function BlogSection({ onReadMore, onViewAll }: BlogSectionProps) {
         {/* Section header */}
         <div className="text-center space-y-4 mb-16">
           <h2 className="text-4xl md:text-5xl font-black text-black text-shadow-warm transform -rotate-1">
-            Reflexiones y Escritos
+            Nuestro Blog
           </h2>
           <p className="text-xl text-gray-800 font-semibold max-w-3xl mx-auto">
-            Muestras de escritura que exploran la condición humana, el crecimiento personal 
-            y las metáforas que dan forma a nuestras vidas.
+            Un espacio de reflexiones cotidianas, preguntas con muchas posibles respuestas y a veces escritos un tanto poéticos (sí, acá nos gusta romantizar muchas cosas).
           </p>
         </div>
 

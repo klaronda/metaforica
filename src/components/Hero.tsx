@@ -118,12 +118,13 @@ export function Hero() {
                 Metafórica
               </h1>
               <p className="text-xl text-black font-semibold leading-relaxed">
-                Conectamos que no ver es sentirse abandonado a placeres, 
-                tratando connotaciones positivamente para aprender cómo librarnos del arco juicio.
+                En este espacio nos preguntamos cosas todo el día. La pregunta que lo resume todo muy bien sería: ¿estás interpretando la vida de una forma que te expande o te retrae?
               </p>
               <p className="text-lg text-gray-800 font-medium">
-                Por medio de entrevistas y autorreflexión de nuestra host, vamos identificando 
-                ideas en nuestra vida que podrías estar limitando nuestra ligereza y paz.
+                Con reflexión, humor y diálogo observamos las diferentes maneras en que podemos vivir nuestra vida. Aunque hay momentos de todo tipo, aquí nos hemos comprometido al reto de empoderarnos en nuestra historia y vivir aceptando que los demás viven la suya como quieren.
+              </p>
+              <p className="text-lg text-gray-800 font-medium">
+                Encuentra en este espacio reflexión en nuestro blog, conversaciones en nuestro podcast y libros disponibles para momentos offline. Gracias por visitarnos. Esperamos robarte una sonrisa.
               </p>
             </div>
 

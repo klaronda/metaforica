@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "./ui/card";
 import { Badge } from "./ui/badge";
-import { Quote, Heart, BookOpen, Mic } from "lucide-react";
+import { Button } from "./ui/button";
+import { Quote, Heart, BookOpen, Mic, Calendar } from "lucide-react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { supabase } from "../lib/supabase";
 
@@ -212,6 +213,28 @@ export function AboutSection() {
                 <div className="font-semibold text-lg text-gray-900">Alexandra De la Torre</div>
                 <div className="text-amber-600">Host de Metafórica • Escritora • Coach Personal</div>
               </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Coach session CTA */}
+        <Card className="bg-[#fdd91f] border-4 border-black shadow-xl" style={{ marginTop: '40px' }}>
+          <CardContent className="p-8 lg:p-12 text-center">
+            <div className="space-y-6 max-w-2xl mx-auto">
+              <h3 className="text-2xl lg:text-3xl font-black text-black">
+                Agenda una sesión de coach con Metafórica
+              </h3>
+              <Button
+                asChild
+                size="lg"
+                className="bg-black hover:bg-gray-800 !text-[#fdd91f] font-bold border-4 border-black rounded-full px-8 py-4 text-lg shadow-lg transform hover:scale-105 transition-all duration-200"
+                style={{ color: '#fdd91f' }}
+              >
+                <a href="https://tr.ee/JwBV9dGt87" target="_blank" rel="noreferrer" className="!text-[#fdd91f] hover:!text-[#fee568]" style={{ color: '#fdd91f' }}>
+                  <Calendar className="h-5 w-5 mr-2 inline" style={{ color: 'inherit' }} />
+                  Reservar ahora
+                </a>
+              </Button>
             </div>
           </CardContent>
         </Card>

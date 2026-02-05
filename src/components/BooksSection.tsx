@@ -69,8 +69,7 @@ export function BooksSection() {
             Libros Publicados
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Obras que invitan a la reflexión profunda y al crecimiento personal. 
-            Cada libro es un compañero en tu viaje hacia una vida más consciente y auténtica.
+            Para momentos offline, algunos escritos de formato más largo. Una amiga que te acompaña en la cartera, en el bus o en un café. El primer libro publicado fue una novela en el 2024 y ahora en el 2026 tenemos nuestro segundo libro a publicar este noviembre que será un poco distinto.
           </p>
         </div>
 
@@ -172,11 +171,10 @@ export function BooksSection() {
             <div className="space-y-6 max-w-2xl mx-auto">
               <div className="space-y-4">
                 <h3 className="text-2xl lg:text-3xl font-bold text-gray-900">
-                  Sé la Primera en Conocer Nuevos Lanzamientos
+                  Mantente al tanto de todo lo que sucede aquí
                 </h3>
                 <p className="text-gray-600 text-lg">
-                  Únete a nuestra comunidad de lectores y recibe actualizaciones exclusivas, 
-                  fragmentos de libros próximos y reflexiones especiales directamente en tu inbox.
+                  ¿Un poco de inspiración esperándote en tu inbox? Sí, sí, sí. Recibe de forma directa actualizaciones de nuestro blog, libros e información de eventos.
                 </p>
               </div>
 

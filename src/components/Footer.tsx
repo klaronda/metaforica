@@ -72,7 +72,7 @@ export function Footer({ onNavigate }: FooterProps) {
               
               {/* Newsletter signup */}
               <div className="space-y-4">
-                <h4 className="text-xl font-black text-white">¡Mantente Conectado!</h4>
+                <h4 className="text-xl font-black text-white">Mantente al tanto de todo lo que sucede aquí</h4>
                 <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3 max-w-md">
                   <Input
                     type="email"
@@ -88,7 +88,7 @@ export function Footer({ onNavigate }: FooterProps) {
                   </Button>
                 </form>
                 <p className="text-xs text-gray-400 font-semibold">
-                  Recibe reflexiones exclusivas y actualizaciones del podcast.
+                  ¿Un poco de inspiración esperándote en tu inbox? Sí, sí, sí. Recibe de forma directa actualizaciones de nuestro blog, libros e información de eventos.
                 </p>
               </div>
             </div>
@@ -114,7 +114,7 @@ export function Footer({ onNavigate }: FooterProps) {
                 </li>
                 <li>
                   <a href="#about" className="text-gray-300 hover:text-yellow-400 transition-all duration-200 font-semibold hover:scale-105 inline-block">
-                    Sobre Alexandra
+                    Mi Historia
                   </a>
                 </li>
               </ul>

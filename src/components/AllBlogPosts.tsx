@@ -140,10 +140,10 @@ export function AllBlogPosts({ onReadPost }: AllBlogPostsProps) {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-5xl md:text-6xl font-black text-black text-shadow-warm mb-4">
-            Escritos
+            Nuestro Blog
           </h1>
           <p className="text-xl md:text-2xl text-gray-800 font-semibold max-w-3xl mx-auto leading-relaxed">
-            Explora la colección completa de reflexiones, historias y técnicas de escritura de Metafórica
+            Un espacio de reflexiones cotidianas, preguntas con muchas posibles respuestas y a veces escritos un tanto poéticos (sí, acá nos gusta romantizar muchas cosas).
           </p>
         </div>
 

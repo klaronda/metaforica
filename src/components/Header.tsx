@@ -65,19 +65,19 @@ export function Header({ onNavigate }: HeaderProps) {
               Home
             </a>
             <a href="/escritos" onClick={(e) => { e.preventDefault(); handleNavClick('allPosts'); }} className="text-[#fdd91f] hover:text-[#fee568] transition-all duration-200 font-semibold hover:scale-105">
-              Escritos
+              Blog
             </a>
             <a href="/#podcast" onClick={(e) => { e.preventDefault(); handleNavClick('podcast'); }} className="text-[#fdd91f] hover:text-[#fee568] transition-all duration-200 font-semibold hover:scale-105">
               Podcast
             </a>
             <a href="/historias" onClick={(e) => { e.preventDefault(); handleNavClick('historias'); }} className="text-[#fdd91f] hover:text-[#fee568] transition-all duration-200 font-semibold hover:scale-105">
-              Historias
+              Cuentos
             </a>
             <a href="/#books" onClick={(e) => { e.preventDefault(); handleNavClick('books'); }} className="text-[#fdd91f] hover:text-[#fee568] transition-all duration-200 font-semibold hover:scale-105">
               Libros
             </a>
             <a href="/#about" onClick={(e) => { e.preventDefault(); handleNavClick('about'); }} className="text-[#fdd91f] hover:text-[#fee568] transition-all duration-200 font-semibold hover:scale-105">
-              Sobre Mí
+              Mi Historia
             </a>
             <Button 
               onClick={handleContactClick}
@@ -109,19 +109,19 @@ export function Header({ onNavigate }: HeaderProps) {
                 Home
               </a>
               <a href="/escritos" onClick={(e) => { e.preventDefault(); handleNavClick('allPosts'); }} className="text-[#fdd91f] hover:text-[#fee568] transition-colors font-semibold text-left">
-                Escritos
+                Blog
               </a>
               <a href="/#podcast" onClick={(e) => { e.preventDefault(); handleNavClick('podcast'); }} className="text-[#fdd91f] hover:text-[#fee568] transition-colors font-semibold text-left">
                 Podcast
               </a>
               <a href="/historias" onClick={(e) => { e.preventDefault(); handleNavClick('historias'); }} className="text-[#fdd91f] hover:text-[#fee568] transition-colors font-semibold text-left">
-                Historias
+                Cuentos
               </a>
               <a href="/#books" onClick={(e) => { e.preventDefault(); handleNavClick('books'); }} className="text-[#fdd91f] hover:text-[#fee568] transition-colors font-semibold text-left">
                 Libros
               </a>
               <a href="/#about" onClick={(e) => { e.preventDefault(); handleNavClick('about'); }} className="text-[#fdd91f] hover:text-[#fee568] transition-colors font-semibold text-left">
-                Sobre Mí
+                Mi Historia
               </a>
               <Button 
                 onClick={handleContactClick}

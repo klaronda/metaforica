@@ -58,14 +58,13 @@ export function AllStories() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center space-y-6">
               <Badge className="bg-black !text-[#fdd91f] uppercase tracking-[0.5em] px-4 py-1 text-xs rounded-full font-bold" style={{ color: '#fdd91f' }}>
-                Historias
+                Cuentos
               </Badge>
               <h1 className="text-5xl md:text-6xl font-black text-black text-shadow-warm">
-                Cuentos y Narrativas
+                Cuentos Cortos
               </h1>
               <p className="text-xl md:text-2xl text-gray-800 font-semibold max-w-3xl mx-auto leading-relaxed">
-                Una colección de historias personales, reflexiones y narrativas que exploran la vida
-                desde diferentes ángulos y perspectivas.
+                Diferentes ángulos de la vida, diferentes momentos representados en mini relatos. El espectro es amplio, así que te invitamos a navegar y consumir cualquier historia. Disponibles para lectura inmediata. Ningún costo implicado.
               </p>
 
               {/* Stats */}
