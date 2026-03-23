@@ -52,6 +52,10 @@
       "destination": "/api/health/deploy.ts"
     },
     {
+      "source": "/api/og-post",
+      "destination": "/api/og-post.ts"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

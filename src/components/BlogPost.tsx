@@ -127,6 +127,46 @@ export function BlogPost({ slug, onBack }: BlogPostProps) {
       });
   }, [slug]);
 
+  // Per-post document title and Open Graph / Twitter meta for in-browser and any JS-aware crawlers
+  useEffect(() => {
+    if (!post || !slug) return;
+
+    const siteTitle = "Podcast y Escritos sobre la Condición Humana";
+    const title = `${post.title} por Metafórica`;
+    const description = (post.excerpt && post.excerpt.trim()) || "Explora la condición humana a través de historias, reflexiones y conversaciones profundas.";
+    const image = (post.featured_image_url && post.featured_image_url.trim()) || "https://fdfchoshzouwguvxfnuv.supabase.co/storage/v1/object/public/site-assets/hero-image.png";
+    const url = `https://soymetaforica.com/escritos/${slug}`;
+
+    const prevTitle = document.title;
+    document.title = title;
+
+    const setMeta = (attr: string, value: string, isProperty = false) => {
+      const key = isProperty ? "property" : "name";
+      let el = document.querySelector(`meta[${key}="${attr}"]`);
+      if (!el) {
+        el = document.createElement("meta");
+        el.setAttribute(key, attr);
+        document.head.appendChild(el);
+      }
+      el.setAttribute("content", value);
+    };
+
+    setMeta("og:title", title, true);
+    setMeta("og:description", description, true);
+    setMeta("og:image", image, true);
+    setMeta("og:url", url, true);
+    setMeta("og:type", "article", true);
+    setMeta("twitter:card", "summary_large_image");
+    setMeta("twitter:title", title);
+    setMeta("twitter:description", description);
+    setMeta("twitter:image", image);
+    setMeta("description", description);
+
+    return () => {
+      document.title = prevTitle || siteTitle;
+    };
+  }, [post, slug]);
+
   const contentHtml = post?.content && post.content.trim().length > 0
     ? post.content
     : post?.excerpt && post.excerpt.trim().length > 0
